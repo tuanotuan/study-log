@@ -5,6 +5,7 @@ services:
     plan: free
     buildCommand: npm ci && npm run build
     startCommand: npm run db:ensure && npm run start
+    autoDeployTrigger: commit
     envVars:
       - key: NODE_VERSION
         value: 22.12.0
