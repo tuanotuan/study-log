@@ -1,9 +1,22 @@
 import { addUtcDays, formatHumanDate } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 import type { CommitDay, ContributionStats } from "@/lib/stats";
 
 type ContributionGraphProps = {
   days: CommitDay[];
   stats: ContributionStats;
+  locale: Locale;
+  labels: {
+    graphTitle: string;
+    graphSubtitle: string;
+    less: string;
+    more: string;
+    totalCommits: string;
+    currentStreak: string;
+    maxStreak: string;
+    activeDays: string;
+    days: string;
+  };
 };
 
 function levelForCount(count: number) {
@@ -43,21 +56,22 @@ function buildCalendarCells(days: CommitDay[]) {
   });
 }
 
-export function ContributionGraph({ days, stats }: ContributionGraphProps) {
+export function ContributionGraph({ days, labels, locale, stats }: ContributionGraphProps) {
   const cells = buildCalendarCells(days);
   const weeks = Array.from({ length: Math.ceil(cells.length / 7) }, (_, index) =>
     cells.slice(index * 7, index * 7 + 7)
   );
+  const dateLocale = locale === "vi" ? "vi-VN" : "en-US";
 
   return (
     <section className="rounded-lg border border-border bg-white p-4 shadow-panel">
       <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold text-ink">Contribution graph</h2>
-          <p className="text-sm text-muted">365 ngày học gần nhất</p>
+          <h2 className="text-base font-semibold text-ink">{labels.graphTitle}</h2>
+          <p className="text-sm text-muted">{labels.graphSubtitle}</p>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted">
-          <span>Ít</span>
+          <span>{labels.less}</span>
           {[0, 1, 2, 4, 6].map((count) => (
             <span
               aria-hidden="true"
@@ -65,15 +79,15 @@ export function ContributionGraph({ days, stats }: ContributionGraphProps) {
               key={count}
             />
           ))}
-          <span>Nhiều</span>
+          <span>{labels.more}</span>
         </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-4">
-        <Stat label="Tổng commit" value={stats.totalCommits.toString()} />
-        <Stat label="Streak hiện tại" value={`${stats.currentStreak} ngày`} />
-        <Stat label="Streak max" value={`${stats.maxStreak} ngày`} />
-        <Stat label="Số ngày có học" value={stats.activeDays.toString()} />
+        <Stat label={labels.totalCommits} value={stats.totalCommits.toString()} />
+        <Stat label={labels.currentStreak} value={`${stats.currentStreak} ${labels.days}`} />
+        <Stat label={labels.maxStreak} value={`${stats.maxStreak} ${labels.days}`} />
+        <Stat label={labels.activeDays} value={stats.activeDays.toString()} />
       </div>
 
       <div className="graph-scroll mt-5 overflow-x-auto pb-2">
@@ -82,15 +96,15 @@ export function ContributionGraph({ days, stats }: ContributionGraphProps) {
             <div className="grid grid-rows-7 gap-[3px]" key={weekIndex}>
               {week.map((day) => {
                 const isPadding = "isPadding" in day;
+                const count = isPadding ? 0 : day.count;
+                const formattedDate = formatHumanDate(day.date, dateLocale);
 
                 return (
                   <div
-                    aria-label={`${formatHumanDate(day.date)}: ${isPadding ? 0 : day.count} commit`}
-                    className={`h-3 w-3 rounded-[2px] ${
-                      isPadding ? "bg-transparent" : levelForCount(day.count)
-                    }`}
+                    aria-label={`${formattedDate}: ${count} commit`}
+                    className={`h-3 w-3 rounded-[2px] ${isPadding ? "bg-transparent" : levelForCount(day.count)}`}
                     key={day.date.toISOString()}
-                    title={`${formatHumanDate(day.date)} - ${isPadding ? 0 : day.count} commit`}
+                    title={`${formattedDate} - ${count} commit`}
                   />
                 );
               })}

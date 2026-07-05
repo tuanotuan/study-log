@@ -2,22 +2,31 @@ import type { StudyCommit } from "@prisma/client";
 import Image from "next/image";
 import { deleteCommitAction } from "@/app/actions/commits";
 import { formatHumanDate } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 
 type CommitListProps = {
   commits: StudyCommit[];
+  locale: Locale;
+  labels: {
+    recentCommits: string;
+    emptyCommits: string;
+    deleteCommit: string;
+  };
 };
 
-export function CommitList({ commits }: CommitListProps) {
+export function CommitList({ commits, labels, locale }: CommitListProps) {
+  const dateLocale = locale === "vi" ? "vi-VN" : "en-US";
+
   return (
     <section className="rounded-lg border border-border bg-white p-4 shadow-panel">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-ink">Commit gần đây</h2>
+        <h2 className="text-base font-semibold text-ink">{labels.recentCommits}</h2>
         <span className="text-sm text-muted">{commits.length} commit</span>
       </div>
 
       {commits.length === 0 ? (
         <div className="rounded-md border border-dashed border-border bg-canvas px-4 py-8 text-center text-sm text-muted">
-          Chưa có commit nào. Tạo commit đầu tiên sau buổi học hôm nay.
+          {labels.emptyCommits}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -36,7 +45,7 @@ export function CommitList({ commits }: CommitListProps) {
               <div className="space-y-3 p-4">
                 <div>
                   <h3 className="line-clamp-2 text-sm font-semibold text-ink">{commit.title}</h3>
-                  <p className="mt-1 text-xs text-muted">{formatHumanDate(commit.studyDate)}</p>
+                  <p className="mt-1 text-xs text-muted">{formatHumanDate(commit.studyDate, dateLocale)}</p>
                 </div>
 
                 <p className="line-clamp-4 whitespace-pre-wrap text-sm text-muted">{commit.note}</p>
@@ -47,7 +56,7 @@ export function CommitList({ commits }: CommitListProps) {
                     className="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50"
                     type="submit"
                   >
-                    Xóa commit
+                    {labels.deleteCommit}
                   </button>
                 </form>
               </div>

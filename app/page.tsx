@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PublicHeader } from "@/components/PublicHeader";
+import { getCopy, getLocale } from "@/lib/i18n";
 import { getCurrentUser } from "@/lib/session";
 
 const previewDays = [
@@ -26,6 +27,8 @@ function graphClass(count: number) {
 
 export default async function HomePage() {
   const user = await getCurrentUser();
+  const locale = await getLocale();
+  const t = getCopy(locale);
 
   if (user) {
     redirect("/dashboard");
@@ -33,33 +36,36 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-white">
-      <PublicHeader />
+      <PublicHeader
+        labels={{ login: t.common.login, register: t.common.register }}
+        locale={locale}
+        returnTo="/"
+      />
 
       <section className="border-b border-border bg-canvas">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center lg:py-16">
           <div className="max-w-2xl">
             <p className="text-sm font-semibold uppercase tracking-[0.12em] text-success">
-              Daily study commits
+              {t.home.eyebrow}
             </p>
             <h1 className="mt-4 text-4xl font-semibold leading-tight text-ink sm:text-5xl">
-              Track your learning like a clean commit history.
+              {t.home.headline}
             </h1>
             <p className="mt-4 text-base leading-7 text-muted">
-              Log one focused study moment with an image, note, and date. Your dashboard turns those
-              moments into a contribution graph, streaks, and a searchable rhythm you can keep.
+              {t.home.description}
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link
                 className="rounded-md bg-success px-4 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#116329]"
                 href="/register"
               >
-                Start logging
+                {t.home.primary}
               </Link>
               <Link
                 className="rounded-md border border-border bg-white px-4 py-2.5 text-center text-sm font-semibold text-ink transition hover:bg-gray-50"
                 href="/login"
               >
-                I already have an account
+                {t.home.secondary}
               </Link>
             </div>
           </div>
@@ -67,10 +73,12 @@ export default async function HomePage() {
           <div className="rounded-lg border border-border bg-white p-4 shadow-panel">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
-                <p className="text-sm font-semibold text-ink">This month</p>
-                <p className="text-xs text-muted">Study contribution preview</p>
+                <p className="text-sm font-semibold text-ink">{t.home.previewTitle}</p>
+                <p className="text-xs text-muted">{t.home.previewSubtitle}</p>
               </div>
-              <span className="rounded-md bg-canvas px-2.5 py-1 text-xs font-medium text-muted">24 commits</span>
+              <span className="rounded-md bg-canvas px-2.5 py-1 text-xs font-medium text-muted">
+                {t.home.commits}
+              </span>
             </div>
 
             <div className="mt-4 grid grid-cols-[repeat(14,minmax(0,1fr))] gap-1">
@@ -86,17 +94,17 @@ export default async function HomePage() {
             <div className="mt-5 space-y-3">
               <div className="rounded-md border border-border p-3">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-semibold text-ink">Read database indexes</p>
-                  <span className="text-xs text-muted">Today</span>
+                  <p className="text-sm font-semibold text-ink">{t.home.sampleOne}</p>
+                  <span className="text-xs text-muted">{t.home.today}</span>
                 </div>
-                <p className="mt-1 text-sm text-muted">Captured schema notes and query examples.</p>
+                <p className="mt-1 text-sm text-muted">{t.home.sampleOneNote}</p>
               </div>
               <div className="rounded-md border border-border p-3">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-semibold text-ink">Finish TypeScript module</p>
-                  <span className="text-xs text-muted">Yesterday</span>
+                  <p className="text-sm font-semibold text-ink">{t.home.sampleTwo}</p>
+                  <span className="text-xs text-muted">{t.home.yesterday}</span>
                 </div>
-                <p className="mt-1 text-sm text-muted">Reviewed server actions and validation flow.</p>
+                <p className="mt-1 text-sm text-muted">{t.home.sampleTwoNote}</p>
               </div>
             </div>
           </div>
@@ -104,9 +112,9 @@ export default async function HomePage() {
       </section>
 
       <section className="mx-auto grid max-w-6xl gap-4 px-4 py-8 md:grid-cols-3">
-        <Feature title="Private by user" text="Each account sees and deletes only its own study commits." />
-        <Feature title="Image-based memory" text="Every commit keeps one visual proof beside your title and note." />
-        <Feature title="Streak focused" text="Current streak, max streak, total commits, and active days stay visible." />
+        <Feature title={t.home.featurePrivate} text={t.home.featurePrivateText} />
+        <Feature title={t.home.featureImage} text={t.home.featureImageText} />
+        <Feature title={t.home.featureStreak} text={t.home.featureStreakText} />
       </section>
     </main>
   );

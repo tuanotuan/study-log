@@ -5,8 +5,9 @@ import { mkdir, unlink, writeFile } from "fs/promises";
 import path from "path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
 import { parseStudyDate } from "@/lib/dates";
+import { getCopy, getLocale } from "@/lib/i18n";
+import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { getUploadDir, getUploadFilename, getUploadPath } from "@/lib/uploads";
 
@@ -39,6 +40,7 @@ function getImageExtension(file: File) {
 }
 
 export async function createCommitAction(formData: FormData) {
+  const t = getCopy(await getLocale());
   const user = await getCurrentUser();
 
   if (!user) {
@@ -51,33 +53,33 @@ export async function createCommitAction(formData: FormData) {
   const image = formData.get("image");
 
   if (title.length < 1 || title.length > 120) {
-    redirectWithError("Tiêu đề cần từ 1 đến 120 ký tự.");
+    redirectWithError(t.errors.invalidTitle);
   }
 
   if (note.length < 1 || note.length > 500) {
-    redirectWithError("Ghi chú cần từ 1 đến 500 ký tự.");
+    redirectWithError(t.errors.invalidNote);
   }
 
   if (!studyDate) {
-    redirectWithError("Ngày học không hợp lệ hoặc đang ở tương lai.");
+    redirectWithError(t.errors.invalidDate);
   }
 
   if (!(image instanceof File) || image.size === 0) {
-    redirectWithError("Vui lòng upload đúng 1 ảnh.");
+    redirectWithError(t.errors.missingImage);
   }
 
   if (!ALLOWED_IMAGE_TYPES.has(image.type)) {
-    redirectWithError("Ảnh phải là JPG, PNG, WEBP hoặc GIF.");
+    redirectWithError(t.errors.invalidImage);
   }
 
   if (image.size > MAX_IMAGE_SIZE) {
-    redirectWithError("Ảnh tối đa 5MB.");
+    redirectWithError(t.errors.largeImage);
   }
 
   const extension = getImageExtension(image);
 
   if (!extension) {
-    redirectWithError("Không nhận diện được định dạng ảnh.");
+    redirectWithError(t.errors.unknownImage);
   }
 
   const uploadsDir = getUploadDir();
@@ -104,6 +106,7 @@ export async function createCommitAction(formData: FormData) {
 }
 
 export async function deleteCommitAction(formData: FormData) {
+  const t = getCopy(await getLocale());
   const user = await getCurrentUser();
 
   if (!user) {
@@ -113,7 +116,7 @@ export async function deleteCommitAction(formData: FormData) {
   const id = field(formData.get("id"));
 
   if (!id) {
-    redirectWithError("Không tìm thấy commit cần xóa.");
+    redirectWithError(t.errors.missingCommit);
   }
 
   const commit = await prisma.studyCommit.findFirst({
@@ -128,7 +131,7 @@ export async function deleteCommitAction(formData: FormData) {
   });
 
   if (!commit) {
-    redirectWithError("Bạn không có quyền xóa commit này.");
+    redirectWithError(t.errors.deleteForbidden);
   }
 
   await prisma.studyCommit.delete({

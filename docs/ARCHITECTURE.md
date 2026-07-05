@@ -11,6 +11,8 @@ Important paths:
 - `app/actions/commits.ts` - create/delete study commit server actions.
 - `components/` - dashboard form, commit list, contribution graph.
 - `components/PublicHeader.tsx` - public marketing/auth header with Login/Register actions.
+- `components/LanguageSwitcher.tsx` - VI/EN switcher backed by a server action and locale cookie.
+- `lib/i18n.ts` - locale helpers and Vietnamese/English copy dictionary.
 - `lib/` - Prisma, session, date helpers, stats, upload path helpers, email helper.
 - `prisma/schema.prisma` - database schema.
 - `scripts/ensure-db.mjs` - idempotent DB bootstrap used locally and on Render.
@@ -29,6 +31,14 @@ Public or auth routes:
 - `/forgot-password` - requests password reset code.
 - `/reset-password` - resets password with a 6-digit code.
 - `/uploads/[filename]` - serves uploaded images from `UPLOAD_DIR`.
+
+Language:
+
+- Locale values: `vi`, `en`.
+- Default locale: `vi`.
+- Cookie name: `logstudy_locale`.
+- `app/actions/language.ts` sets the cookie and redirects back to the current page.
+- Server actions read locale so visible validation errors match the selected language.
 
 Protected route:
 

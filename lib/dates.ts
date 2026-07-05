@@ -36,8 +36,8 @@ export function dateKey(date: Date) {
   return formatDateInput(startOfUtcDay(date));
 }
 
-export function formatHumanDate(date: Date) {
-  return new Intl.DateTimeFormat("vi-VN", {
+export function formatHumanDate(date: Date, locale = "vi-VN") {
+  return new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

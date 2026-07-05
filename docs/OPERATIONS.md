@@ -43,6 +43,13 @@ Required:
 - `UPLOAD_DIR`
 - `APP_URL`
 
+Locale:
+
+- Supported: `vi`, `en`
+- Default: `vi`
+- Cookie: `logstudy_locale`
+- Toggle: VI/EN switcher in public header and dashboard header.
+
 Demo/debug:
 
 - `AUTH_CODE_DEBUG`
@@ -129,3 +136,10 @@ If SMTP is configured:
 2. Set `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM` in Render.
 3. Trigger the flow and check the mailbox.
 4. If delivery fails, the app falls back to logs and possibly visible debug code.
+
+## How To Test Language Switching
+
+1. Open `/`.
+2. Click `EN`; public page and auth labels should switch to English.
+3. Click `VI`; labels should switch back to Vietnamese.
+4. Login and check `/dashboard`; dashboard header, commit form, graph labels, and recent commit labels should follow the selected language.

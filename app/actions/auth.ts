@@ -4,6 +4,7 @@ import { randomInt } from "crypto";
 import bcrypt from "bcrypt";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getCopy, getLocale } from "@/lib/i18n";
 import { clearSession, createSession } from "@/lib/session";
 import { sendAuthCodeEmail } from "@/lib/email";
 
@@ -98,20 +99,21 @@ async function createPasswordResetCode(userId: string, email: string) {
 }
 
 export async function registerAction(formData: FormData) {
+  const t = getCopy(await getLocale());
   const email = normalizeEmail(formData.get("email"));
   const password = getPassword(formData.get("password"));
   const confirmPassword = getPassword(formData.get("confirmPassword"));
 
   if (!EMAIL_PATTERN.test(email)) {
-    redirectWithError("/register", "Email khong hop le.");
+    redirectWithError("/register", t.errors.invalidEmail);
   }
 
   if (password.length < 8) {
-    redirectWithError("/register", "Mat khau can it nhat 8 ky tu.");
+    redirectWithError("/register", t.errors.passwordLength);
   }
 
   if (password !== confirmPassword) {
-    redirectWithError("/register", "Mat khau xac nhan khong khop.");
+    redirectWithError("/register", t.errors.passwordMismatch);
   }
 
   const existingUser = await prisma.user.findUnique({
@@ -124,7 +126,7 @@ export async function registerAction(formData: FormData) {
   });
 
   if (existingUser?.emailVerifiedAt) {
-    redirectWithError("/register", "Email nay da duoc dang ky.");
+    redirectWithError("/register", t.errors.emailExists);
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
@@ -153,13 +155,14 @@ export async function registerAction(formData: FormData) {
 }
 
 export async function verifyEmailAction(formData: FormData) {
+  const t = getCopy(await getLocale());
   const email = normalizeEmail(formData.get("email"));
   const code = getCode(formData.get("code"));
 
   if (!EMAIL_PATTERN.test(email) || !CODE_PATTERN.test(code)) {
     redirectWithParams("/verify-email", {
       email,
-      error: "Email hoac ma xac thuc khong hop le."
+      error: t.errors.invalidCode
     });
   }
 
@@ -172,7 +175,7 @@ export async function verifyEmailAction(formData: FormData) {
   });
 
   if (!user) {
-    redirectWithError("/register", "Email chua duoc dang ky.");
+    redirectWithError("/register", t.errors.emailNotRegistered);
   }
 
   if (user.emailVerifiedAt) {
@@ -194,7 +197,7 @@ export async function verifyEmailAction(formData: FormData) {
   if (!verificationCode || !(await bcrypt.compare(code, verificationCode.codeHash))) {
     redirectWithParams("/verify-email", {
       email,
-      error: "Ma xac thuc khong dung hoac da het han."
+      error: t.errors.wrongCode
     });
   }
 
@@ -213,10 +216,11 @@ export async function verifyEmailAction(formData: FormData) {
 }
 
 export async function resendVerificationAction(formData: FormData) {
+  const t = getCopy(await getLocale());
   const email = normalizeEmail(formData.get("email"));
 
   if (!EMAIL_PATTERN.test(email)) {
-    redirectWithError("/verify-email", "Email khong hop le.");
+    redirectWithError("/verify-email", t.errors.invalidEmail);
   }
 
   const user = await prisma.user.findUnique({
@@ -229,7 +233,7 @@ export async function resendVerificationAction(formData: FormData) {
   });
 
   if (!user) {
-    redirectWithError("/register", "Email chua duoc dang ky.");
+    redirectWithError("/register", t.errors.emailNotRegistered);
   }
 
   if (user.emailVerifiedAt) {
@@ -241,11 +245,12 @@ export async function resendVerificationAction(formData: FormData) {
 }
 
 export async function loginAction(formData: FormData) {
+  const t = getCopy(await getLocale());
   const email = normalizeEmail(formData.get("email"));
   const password = getPassword(formData.get("password"));
 
   if (!EMAIL_PATTERN.test(email) || password.length === 0) {
-    redirectWithError("/login", "Email hoac mat khau khong dung.");
+    redirectWithError("/login", t.errors.invalidLogin);
   }
 
   const user = await prisma.user.findUnique({
@@ -259,20 +264,20 @@ export async function loginAction(formData: FormData) {
   });
 
   if (!user) {
-    redirectWithError("/login", "Email hoac mat khau khong dung.");
+    redirectWithError("/login", t.errors.invalidLogin);
   }
 
   const isValidPassword = await bcrypt.compare(password, user.passwordHash);
 
   if (!isValidPassword) {
-    redirectWithError("/login", "Email hoac mat khau khong dung.");
+    redirectWithError("/login", t.errors.invalidLogin);
   }
 
   if (!user.emailVerifiedAt) {
     const result = await createEmailVerificationCode(user.id, user.email);
     redirectWithParams("/verify-email", {
       ...codeRedirectParams(email, result.emailSent, result.code),
-      error: "Email chua xac thuc. Minh da gui lai ma moi."
+      error: t.errors.unverified
     });
   }
 
@@ -281,10 +286,11 @@ export async function loginAction(formData: FormData) {
 }
 
 export async function requestPasswordResetAction(formData: FormData) {
+  const t = getCopy(await getLocale());
   const email = normalizeEmail(formData.get("email"));
 
   if (!EMAIL_PATTERN.test(email)) {
-    redirectWithError("/forgot-password", "Email khong hop le.");
+    redirectWithError("/forgot-password", t.errors.invalidEmail);
   }
 
   const user = await prisma.user.findUnique({
@@ -296,7 +302,7 @@ export async function requestPasswordResetAction(formData: FormData) {
   });
 
   if (!user) {
-    redirectWithError("/forgot-password", "Email nay chua co tai khoan.");
+    redirectWithError("/forgot-password", t.errors.emailNotRegistered);
   }
 
   const result = await createPasswordResetCode(user.id, user.email);
@@ -304,6 +310,7 @@ export async function requestPasswordResetAction(formData: FormData) {
 }
 
 export async function resetPasswordAction(formData: FormData) {
+  const t = getCopy(await getLocale());
   const email = normalizeEmail(formData.get("email"));
   const code = getCode(formData.get("code"));
   const password = getPassword(formData.get("password"));
@@ -312,21 +319,21 @@ export async function resetPasswordAction(formData: FormData) {
   if (!EMAIL_PATTERN.test(email) || !CODE_PATTERN.test(code)) {
     redirectWithParams("/reset-password", {
       email,
-      error: "Email hoac ma reset khong hop le."
+      error: t.errors.invalidCode
     });
   }
 
   if (password.length < 8) {
     redirectWithParams("/reset-password", {
       email,
-      error: "Mat khau can it nhat 8 ky tu."
+      error: t.errors.passwordLength
     });
   }
 
   if (password !== confirmPassword) {
     redirectWithParams("/reset-password", {
       email,
-      error: "Mat khau xac nhan khong khop."
+      error: t.errors.passwordMismatch
     });
   }
 
@@ -340,7 +347,7 @@ export async function resetPasswordAction(formData: FormData) {
   if (!user) {
     redirectWithParams("/reset-password", {
       email,
-      error: "Khong the reset mat khau cho email nay."
+      error: t.errors.resetUnavailable
     });
   }
 
@@ -359,7 +366,7 @@ export async function resetPasswordAction(formData: FormData) {
   if (!resetCode || !(await bcrypt.compare(code, resetCode.codeHash))) {
     redirectWithParams("/reset-password", {
       email,
-      error: "Ma reset khong dung hoac da het han."
+      error: t.errors.wrongCode
     });
   }
 

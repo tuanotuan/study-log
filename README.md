@@ -2,7 +2,7 @@
 
 Web app ghi lai qua trinh hoc tap moi ngay bang cac "commit hoc tap": 1 anh, ghi chu ngan va ngay hoc. App co register/login/logout, dashboard, upload anh local va contribution graph kieu GitHub.
 
-Trang public co header voi Login/Register o goc tren ben phai; user da login vao `/` se duoc dua thang toi dashboard.
+Trang public co header voi Login/Register o goc tren ben phai; user da login vao `/` se duoc dua thang toi dashboard. UI ho tro tieng Viet va English qua nut VI/EN.
 
 ## Stack
 
@@ -11,6 +11,7 @@ Trang public co header voi Login/Register o goc tren ben phai; user da login vao
 - SQLite + Prisma
 - Auth email/password voi password hash bang bcrypt
 - Session cookie co chu ky HMAC
+- UI bilingual: Vietnamese + English
 
 ## Project handoff docs
 

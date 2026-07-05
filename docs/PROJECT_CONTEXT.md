@@ -9,6 +9,7 @@ LogStudy is a daily study logging web app.
 Core user story:
 
 - A visitor lands on a professional public home page with Login/Register in the top-right header.
+- The interface supports Vietnamese and English through a VI/EN switcher.
 - A user registers and verifies their email.
 - After studying, the user creates a study commit.
 - One study commit contains a title, note, study date, and exactly one image.
@@ -31,6 +32,7 @@ Live app:
 - Prisma
 - bcrypt
 - session cookie signed with HMAC
+- bilingual UI dictionary and locale cookie
 - Nodemailer for SMTP email
 - Render free web service for demo deploy
 
@@ -40,6 +42,8 @@ Public UI:
 
 - `/` is a polished product entry page, not an oversized login form.
 - Login/Register live in the top-right header through `components/PublicHeader.tsx`.
+- Public pages, auth pages, dashboard, dashboard widgets, and validation errors use Vietnamese/English copy.
+- Locale is stored in `logstudy_locale` and changed through `components/LanguageSwitcher.tsx`.
 - Logged-in users visiting `/` are redirected to `/dashboard`.
 - Login and register pages use the same top header and compact form panels.
 

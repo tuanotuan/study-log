@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { resetPasswordAction } from "@/app/actions/auth";
+import { PublicHeader } from "@/components/PublicHeader";
+import { getCopy, getLocale } from "@/lib/i18n";
 import { getCurrentUser } from "@/lib/session";
 
 type ResetPasswordPageProps = {
@@ -15,30 +17,36 @@ type ResetPasswordPageProps = {
 export default async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
   const user = await getCurrentUser();
   const params = await searchParams;
+  const locale = await getLocale();
+  const t = getCopy(locale);
 
   if (user) {
     redirect("/dashboard");
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-canvas px-4 py-10">
-      <section className="w-full max-w-sm rounded-lg border border-border bg-white p-6 shadow-panel">
+    <main className="min-h-screen bg-canvas">
+      <PublicHeader
+        labels={{ login: t.common.login, register: t.common.register }}
+        locale={locale}
+        returnTo="/reset-password"
+      />
+      <section className="mx-auto mt-10 w-full max-w-sm rounded-lg border border-border bg-white p-6 shadow-panel">
         <div className="mb-6 text-center">
-          <p className="text-sm font-semibold text-muted">LogStudy</p>
-          <h1 className="mt-1 text-2xl font-semibold text-ink">Reset password</h1>
-          <p className="mt-2 text-sm text-muted">Enter the reset code and your new password.</p>
+          <p className="text-sm font-semibold text-muted">{t.common.appName}</p>
+          <h1 className="mt-1 text-2xl font-semibold text-ink">{t.auth.resetTitle}</h1>
+          <p className="mt-2 text-sm text-muted">{t.auth.resetSubtitle}</p>
         </div>
 
         {params?.sent ? (
           <div className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-            Reset code sent.
+            {t.auth.resetSent}
           </div>
         ) : null}
 
         {params?.debugCode ? (
           <div className="mb-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-            Email is not configured yet. Test code:{" "}
-            <span className="font-semibold tracking-wide">{params.debugCode}</span>
+            {t.auth.testCode} <span className="font-semibold tracking-wide">{params.debugCode}</span>
           </div>
         ) : null}
 
@@ -50,7 +58,7 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
 
         <form action={resetPasswordAction} className="space-y-4">
           <label className="block">
-            <span className="text-sm font-medium text-ink">Email</span>
+            <span className="text-sm font-medium text-ink">{t.common.email}</span>
             <input
               className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
               name="email"
@@ -62,7 +70,7 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-ink">Code</span>
+            <span className="text-sm font-medium text-ink">{t.common.code}</span>
             <input
               className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
               name="code"
@@ -75,7 +83,7 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-ink">New password</span>
+            <span className="text-sm font-medium text-ink">{t.auth.newPassword}</span>
             <input
               className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
               name="password"
@@ -87,7 +95,7 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-ink">Confirm password</span>
+            <span className="text-sm font-medium text-ink">{t.common.confirmPassword}</span>
             <input
               className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
               name="confirmPassword"
@@ -102,14 +110,14 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
             className="w-full rounded-md bg-success px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#116329] focus:outline-none focus:ring-2 focus:ring-emerald-200"
             type="submit"
           >
-            Reset password
+            {t.auth.resetPassword}
           </button>
         </form>
 
         <p className="mt-5 text-center text-sm text-muted">
-          Need a code?{" "}
+          {t.auth.needCode}{" "}
           <Link className="font-medium text-accent hover:underline" href="/forgot-password">
-            Request reset
+            {t.auth.requestReset}
           </Link>
         </p>
       </section>

@@ -47,3 +47,10 @@ Last updated: 2026-07-05
 - Added `components/PublicHeader.tsx` with Login/Register actions in the top-right.
 - Updated login and register pages to use the shared header and compact form panels.
 - Preserved logged-in redirect from `/` to `/dashboard`.
+
+## 2026-07-05 - Bilingual UI
+
+- Added Vietnamese/English locale support with `lib/i18n.ts`.
+- Added `components/LanguageSwitcher.tsx` and `app/actions/language.ts`.
+- Locale persists in `logstudy_locale`.
+- Updated public page, auth pages, dashboard, commit form, commit list, graph labels, and server validation errors to use localized copy.

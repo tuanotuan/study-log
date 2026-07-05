@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { registerAction } from "@/app/actions/auth";
 import { PublicHeader } from "@/components/PublicHeader";
+import { getCopy, getLocale } from "@/lib/i18n";
 import { getCurrentUser } from "@/lib/session";
 
 type RegisterPageProps = {
@@ -13,6 +14,8 @@ type RegisterPageProps = {
 export default async function RegisterPage({ searchParams }: RegisterPageProps) {
   const user = await getCurrentUser();
   const params = await searchParams;
+  const locale = await getLocale();
+  const t = getCopy(locale);
 
   if (user) {
     redirect("/dashboard");
@@ -20,24 +23,29 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
 
   return (
     <main className="min-h-screen bg-canvas">
-      <PublicHeader active="register" />
+      <PublicHeader
+        active="register"
+        labels={{ login: t.common.login, register: t.common.register }}
+        locale={locale}
+        returnTo="/register"
+      />
 
       <section className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[minmax(0,1fr)_400px] lg:py-14">
         <div className="hidden rounded-lg border border-border bg-white p-5 shadow-panel lg:block">
-          <p className="text-sm font-semibold text-muted">Build your study trail</p>
-          <h1 className="mt-2 text-3xl font-semibold text-ink">One clean study commit after every focused session.</h1>
+          <p className="text-sm font-semibold text-muted">{t.auth.registerPanelEyebrow}</p>
+          <h1 className="mt-2 text-3xl font-semibold text-ink">{t.auth.registerPanelTitle}</h1>
           <div className="mt-6 space-y-3">
-            <Feature text="Email verification protects account access." />
-            <Feature text="Images are stored with notes and dates." />
-            <Feature text="Contribution graph makes consistency visible." />
+            <Feature text={t.auth.registerFeatureOne} />
+            <Feature text={t.auth.registerFeatureTwo} />
+            <Feature text={t.auth.registerFeatureThree} />
           </div>
         </div>
 
         <section className="w-full rounded-lg border border-border bg-white p-5 shadow-panel">
           <div className="mb-5">
-            <p className="text-sm font-semibold text-muted">LogStudy</p>
-            <h2 className="mt-1 text-2xl font-semibold text-ink">Create account</h2>
-            <p className="mt-2 text-sm text-muted">A 6-digit verification code will be sent to your email.</p>
+            <p className="text-sm font-semibold text-muted">{t.common.appName}</p>
+            <h2 className="mt-1 text-2xl font-semibold text-ink">{t.auth.registerTitle}</h2>
+            <p className="mt-2 text-sm text-muted">{t.auth.registerSubtitle}</p>
           </div>
 
           {params?.error ? (
@@ -48,7 +56,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
 
           <form action={registerAction} className="space-y-4">
             <label className="block">
-              <span className="text-sm font-medium text-ink">Email</span>
+              <span className="text-sm font-medium text-ink">{t.common.email}</span>
               <input
                 className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
                 name="email"
@@ -59,7 +67,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-ink">Password</span>
+              <span className="text-sm font-medium text-ink">{t.common.password}</span>
               <input
                 className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
                 name="password"
@@ -71,7 +79,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-ink">Confirm password</span>
+              <span className="text-sm font-medium text-ink">{t.common.confirmPassword}</span>
               <input
                 className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
                 name="confirmPassword"
@@ -86,16 +94,16 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
               className="w-full rounded-md bg-success px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#116329] focus:outline-none focus:ring-2 focus:ring-emerald-200"
               type="submit"
             >
-              Register
+              {t.common.register}
             </button>
           </form>
 
           <div className="mt-4 flex items-center justify-between gap-3 text-sm">
             <Link className="font-medium text-accent hover:underline" href="/login">
-              Login instead
+              {t.auth.loginInstead}
             </Link>
             <Link className="font-medium text-accent hover:underline" href="/verify-email">
-              Verify email
+              {t.auth.verifyEmail}
             </Link>
           </div>
         </section>
