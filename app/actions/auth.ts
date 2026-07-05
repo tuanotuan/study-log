@@ -56,7 +56,7 @@ async function createEmailVerificationCode(userId: string, email: string) {
     }
   });
 
-  await sendAuthCodeEmail(email, code, "verify");
+  return sendAuthCodeEmail(email, code, "verify");
 }
 
 async function createPasswordResetCode(userId: string, email: string) {
@@ -75,7 +75,7 @@ async function createPasswordResetCode(userId: string, email: string) {
     }
   });
 
-  await sendAuthCodeEmail(email, code, "reset");
+  return sendAuthCodeEmail(email, code, "reset");
 }
 
 export async function registerAction(formData: FormData) {
@@ -272,12 +272,11 @@ export async function requestPasswordResetAction(formData: FormData) {
     where: { email },
     select: {
       id: true,
-      email: true,
-      emailVerifiedAt: true
+      email: true
     }
   });
 
-  if (user?.emailVerifiedAt) {
+  if (user) {
     await createPasswordResetCode(user.id, user.email);
   }
 
@@ -314,12 +313,11 @@ export async function resetPasswordAction(formData: FormData) {
   const user = await prisma.user.findUnique({
     where: { email },
     select: {
-      id: true,
-      emailVerifiedAt: true
+      id: true
     }
   });
 
-  if (!user || !user.emailVerifiedAt) {
+  if (!user) {
     redirectWithParams("/reset-password", {
       email,
       error: "Khong the reset mat khau cho email nay."
@@ -348,7 +346,8 @@ export async function resetPasswordAction(formData: FormData) {
   await prisma.user.update({
     where: { id: user.id },
     data: {
-      passwordHash: await bcrypt.hash(password, 12)
+      passwordHash: await bcrypt.hash(password, 12),
+      emailVerifiedAt: new Date()
     }
   });
 

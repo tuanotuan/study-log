@@ -31,12 +31,13 @@ UPLOAD_DIR="./public/uploads"
 APP_URL="http://localhost:3000"
 
 # Optional SMTP. If omitted, auth codes are printed in server logs.
-SMTP_HOST=""
-SMTP_PORT="587"
+# Gmail requires a Google App Password, not your normal Gmail password.
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT="465"
 SMTP_USER=""
 SMTP_PASS=""
 SMTP_FROM=""
-SMTP_SECURE="false"
+SMTP_SECURE="true"
 ```
 
 ## Migrate database
@@ -101,15 +102,15 @@ Register tao user chua verified, gui ma 6 so qua email, sau do user nhap ma tai 
 De gui email that tren Render, them cac env vars trong service:
 
 ```env
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=your-user
-SMTP_PASS=your-password
-SMTP_FROM="LogStudy <no-reply@example.com>"
-SMTP_SECURE=false
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=your-gmail@gmail.com
+SMTP_PASS=your-google-app-password
+SMTP_FROM="LogStudy <your-gmail@gmail.com>"
+SMTP_SECURE=true
 ```
 
-Neu chua cau hinh SMTP, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Cach nay dung de test auto deploy nhanh.
+Voi Gmail, `SMTP_PASS` phai la Google App Password, khong phai mat khau Gmail thuong. Neu chua cau hinh SMTP, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`.
 
 ## Scripts
 

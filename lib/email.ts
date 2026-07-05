@@ -9,12 +9,12 @@ function getAppUrl() {
 }
 
 function getTransport() {
-  const host = process.env.SMTP_HOST;
   const port = Number(process.env.SMTP_PORT || 587);
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
+  const host = process.env.SMTP_HOST || (user && pass ? "smtp.gmail.com" : "");
 
-  if (!host) {
+  if (!host || !user || !pass) {
     return null;
   }
 
@@ -62,7 +62,7 @@ export async function sendAuthCodeEmail(email: string, code: string, kind: AuthE
 
   if (!transport) {
     console.log(`[LogStudy email fallback] ${kind} code for ${email}: ${code}`);
-    return;
+    return false;
   }
 
   try {
@@ -72,8 +72,10 @@ export async function sendAuthCodeEmail(email: string, code: string, kind: AuthE
       subject: copy.subject,
       text: copy.text
     });
+    return true;
   } catch (error) {
     console.error("[LogStudy email error]", error);
     console.log(`[LogStudy email fallback] ${kind} code for ${email}: ${code}`);
+    return false;
   }
 }
