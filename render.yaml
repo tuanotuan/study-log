@@ -13,5 +13,7 @@ services:
         value: file:/tmp/logstudy.db
       - key: UPLOAD_DIR
         value: /tmp/logstudy-uploads
+      - key: APP_URL
+        value: https://logstudy.onrender.com
       - key: SESSION_SECRET
         generateValue: true

@@ -44,11 +44,17 @@ if (sqlitePath) {
 
 const prisma = new PrismaClient();
 
+async function columnExists(tableName, columnName) {
+  const columns = await prisma.$queryRawUnsafe(`PRAGMA table_info("${tableName}")`);
+  return columns.some((column) => column.name === columnName);
+}
+
 const statements = [
   `CREATE TABLE IF NOT EXISTS "User" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
+    "emailVerifiedAt" DATETIME,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
   )`,
   `CREATE TABLE IF NOT EXISTS "StudyCommit" (
@@ -63,7 +69,27 @@ const statements = [
   )`,
   `CREATE UNIQUE INDEX IF NOT EXISTS "User_email_key" ON "User"("email")`,
   `CREATE INDEX IF NOT EXISTS "StudyCommit_userId_studyDate_idx" ON "StudyCommit"("userId", "studyDate")`,
-  `CREATE INDEX IF NOT EXISTS "StudyCommit_userId_createdAt_idx" ON "StudyCommit"("userId", "createdAt")`
+  `CREATE INDEX IF NOT EXISTS "StudyCommit_userId_createdAt_idx" ON "StudyCommit"("userId", "createdAt")`,
+  `CREATE TABLE IF NOT EXISTS "EmailVerificationCode" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "codeHash" TEXT NOT NULL,
+    "expiresAt" DATETIME NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "EmailVerificationCode_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+  )`,
+  `CREATE TABLE IF NOT EXISTS "PasswordResetCode" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "codeHash" TEXT NOT NULL,
+    "expiresAt" DATETIME NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "PasswordResetCode_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+  )`,
+  `CREATE INDEX IF NOT EXISTS "EmailVerificationCode_userId_expiresAt_idx" ON "EmailVerificationCode"("userId", "expiresAt")`,
+  `CREATE INDEX IF NOT EXISTS "EmailVerificationCode_userId_createdAt_idx" ON "EmailVerificationCode"("userId", "createdAt")`,
+  `CREATE INDEX IF NOT EXISTS "PasswordResetCode_userId_expiresAt_idx" ON "PasswordResetCode"("userId", "expiresAt")`,
+  `CREATE INDEX IF NOT EXISTS "PasswordResetCode_userId_createdAt_idx" ON "PasswordResetCode"("userId", "createdAt")`
 ];
 
 try {
@@ -71,6 +97,13 @@ try {
 
   for (const statement of statements) {
     await prisma.$executeRawUnsafe(statement);
+  }
+
+  if (!(await columnExists("User", "emailVerifiedAt"))) {
+    await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "emailVerifiedAt" DATETIME`);
+    await prisma.$executeRawUnsafe(
+      `UPDATE "User" SET "emailVerifiedAt" = "createdAt" WHERE "emailVerifiedAt" IS NULL`
+    );
   }
 
   console.log("Database is ready.");

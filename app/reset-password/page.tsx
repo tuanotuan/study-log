@@ -1,18 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { loginAction } from "@/app/actions/auth";
+import { resetPasswordAction } from "@/app/actions/auth";
 import { getCurrentUser } from "@/lib/session";
 
-type LoginPageProps = {
+type ResetPasswordPageProps = {
   searchParams?: Promise<{
+    email?: string;
     error?: string;
-    registered?: string;
-    reset?: string;
-    verified?: string;
+    sent?: string;
   }>;
 };
 
-export default async function LoginPage({ searchParams }: LoginPageProps) {
+export default async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
   const user = await getCurrentUser();
   const params = await searchParams;
 
@@ -25,24 +24,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <section className="w-full max-w-sm rounded-lg border border-border bg-white p-6 shadow-panel">
         <div className="mb-6 text-center">
           <p className="text-sm font-semibold text-muted">LogStudy</p>
-          <h1 className="mt-1 text-2xl font-semibold text-ink">Login</h1>
+          <h1 className="mt-1 text-2xl font-semibold text-ink">Reset password</h1>
+          <p className="mt-2 text-sm text-muted">Enter the reset code and your new password.</p>
         </div>
 
-        {params?.registered ? (
+        {params?.sent ? (
           <div className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-            Registration successful. Please verify your email before logging in.
-          </div>
-        ) : null}
-
-        {params?.verified ? (
-          <div className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-            Email verified. You can log in now.
-          </div>
-        ) : null}
-
-        {params?.reset ? (
-          <div className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-            Password updated. Please log in again.
+            If the email exists, a reset code has been sent.
           </div>
         ) : null}
 
@@ -52,7 +40,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </div>
         ) : null}
 
-        <form action={loginAction} className="space-y-4">
+        <form action={resetPasswordAction} className="space-y-4">
           <label className="block">
             <span className="text-sm font-medium text-ink">Email</span>
             <input
@@ -60,17 +48,44 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               name="email"
               type="email"
               autoComplete="email"
+              defaultValue={params?.email ?? ""}
               required
             />
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-ink">Password</span>
+            <span className="text-sm font-medium text-ink">Code</span>
+            <input
+              className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
+              name="code"
+              inputMode="numeric"
+              maxLength={6}
+              minLength={6}
+              pattern="[0-9]{6}"
+              required
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-medium text-ink">New password</span>
             <input
               className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
               name="password"
               type="password"
-              autoComplete="current-password"
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-medium text-ink">Confirm password</span>
+            <input
+              className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
+              name="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              minLength={8}
               required
             />
           </label>
@@ -79,20 +94,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             className="w-full rounded-md bg-success px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#116329] focus:outline-none focus:ring-2 focus:ring-emerald-200"
             type="submit"
           >
-            Login
+            Reset password
           </button>
         </form>
 
-        <div className="mt-4 text-center">
-          <Link className="text-sm font-medium text-accent hover:underline" href="/forgot-password">
-            Forgot password?
-          </Link>
-        </div>
-
         <p className="mt-5 text-center text-sm text-muted">
-          No account yet?{" "}
-          <Link className="font-medium text-accent hover:underline" href="/register">
-            Register
+          Need a code?{" "}
+          <Link className="font-medium text-accent hover:underline" href="/forgot-password">
+            Request reset
           </Link>
         </p>
       </section>

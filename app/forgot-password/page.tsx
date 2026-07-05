@@ -1,15 +1,15 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { registerAction } from "@/app/actions/auth";
+import { requestPasswordResetAction } from "@/app/actions/auth";
 import { getCurrentUser } from "@/lib/session";
 
-type RegisterPageProps = {
+type ForgotPasswordPageProps = {
   searchParams?: Promise<{
     error?: string;
   }>;
 };
 
-export default async function RegisterPage({ searchParams }: RegisterPageProps) {
+export default async function ForgotPasswordPage({ searchParams }: ForgotPasswordPageProps) {
   const user = await getCurrentUser();
   const params = await searchParams;
 
@@ -22,8 +22,8 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
       <section className="w-full max-w-sm rounded-lg border border-border bg-white p-6 shadow-panel">
         <div className="mb-6 text-center">
           <p className="text-sm font-semibold text-muted">LogStudy</p>
-          <h1 className="mt-1 text-2xl font-semibold text-ink">Create account</h1>
-          <p className="mt-2 text-sm text-muted">A 6-digit verification code will be sent to your email.</p>
+          <h1 className="mt-1 text-2xl font-semibold text-ink">Forgot password</h1>
+          <p className="mt-2 text-sm text-muted">We will send a reset code if the email exists.</p>
         </div>
 
         {params?.error ? (
@@ -32,7 +32,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
           </div>
         ) : null}
 
-        <form action={registerAction} className="space-y-4">
+        <form action={requestPasswordResetAction} className="space-y-4">
           <label className="block">
             <span className="text-sm font-medium text-ink">Email</span>
             <input
@@ -44,49 +44,18 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
             />
           </label>
 
-          <label className="block">
-            <span className="text-sm font-medium text-ink">Password</span>
-            <input
-              className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              minLength={8}
-              required
-            />
-          </label>
-
-          <label className="block">
-            <span className="text-sm font-medium text-ink">Confirm password</span>
-            <input
-              className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
-              name="confirmPassword"
-              type="password"
-              autoComplete="new-password"
-              minLength={8}
-              required
-            />
-          </label>
-
           <button
             className="w-full rounded-md bg-success px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#116329] focus:outline-none focus:ring-2 focus:ring-emerald-200"
             type="submit"
           >
-            Register
+            Send reset code
           </button>
         </form>
 
         <p className="mt-5 text-center text-sm text-muted">
-          Already have an account?{" "}
+          Back to{" "}
           <Link className="font-medium text-accent hover:underline" href="/login">
             Login
-          </Link>
-        </p>
-
-        <p className="mt-2 text-center text-sm text-muted">
-          Have a code?{" "}
-          <Link className="font-medium text-accent hover:underline" href="/verify-email">
-            Verify email
           </Link>
         </p>
       </section>

@@ -28,6 +28,15 @@ Noi dung mau:
 DATABASE_URL="file:./dev.db"
 SESSION_SECRET="replace-with-a-long-random-secret"
 UPLOAD_DIR="./public/uploads"
+APP_URL="http://localhost:3000"
+
+# Optional SMTP. If omitted, auth codes are printed in server logs.
+SMTP_HOST=""
+SMTP_PORT="587"
+SMTP_USER=""
+SMTP_PASS=""
+SMTP_FROM=""
+SMTP_SECURE="false"
 ```
 
 ## Migrate database
@@ -67,9 +76,27 @@ Render config chinh:
 - Free plan demo: `plan: free`
 - `DATABASE_URL`: `file:/tmp/logstudy.db`
 - `UPLOAD_DIR`: `/tmp/logstudy-uploads`
+- `APP_URL`: `https://logstudy.onrender.com`
 - `SESSION_SECRET`: Render tu generate
 
 Ban free khong co Persistent Disk, nen SQLite database va anh upload co the mat khi Render redeploy/restart. De dung production, chuyen `render.yaml` sang paid plan co Persistent Disk va dat `DATABASE_URL`/`UPLOAD_DIR` ve `/var/data`.
+
+## Email verification va quen mat khau
+
+Register tao user chua verified, gui ma 6 so qua email, sau do user nhap ma tai `/verify-email`. Login se chan user chua verified va gui lai ma moi. Forgot password gui ma reset tai `/forgot-password`, sau do reset tai `/reset-password`.
+
+De gui email that tren Render, them cac env vars trong service:
+
+```env
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your-user
+SMTP_PASS=your-password
+SMTP_FROM="LogStudy <no-reply@example.com>"
+SMTP_SECURE=false
+```
+
+Neu chua cau hinh SMTP, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Cach nay dung de test auto deploy nhanh.
 
 ## Scripts
 

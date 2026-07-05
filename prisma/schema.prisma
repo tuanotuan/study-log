@@ -8,11 +8,14 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  email        String        @unique
-  passwordHash String
-  createdAt    DateTime      @default(now())
-  studyCommits StudyCommit[]
+  id                     String                  @id @default(cuid())
+  email                  String                  @unique
+  passwordHash           String
+  emailVerifiedAt        DateTime?
+  createdAt              DateTime                @default(now())
+  studyCommits           StudyCommit[]
+  emailVerificationCodes EmailVerificationCode[]
+  passwordResetCodes     PasswordResetCode[]
 }
 
 model StudyCommit {
@@ -27,5 +30,31 @@ model StudyCommit {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, studyDate])
+  @@index([userId, createdAt])
+}
+
+model EmailVerificationCode {
+  id        String   @id @default(cuid())
+  userId    String
+  codeHash  String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@index([userId, createdAt])
+}
+
+model PasswordResetCode {
+  id        String   @id @default(cuid())
+  userId    String
+  codeHash  String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
   @@index([userId, createdAt])
 }
