@@ -81,6 +81,19 @@ Render config chinh:
 
 Ban free khong co Persistent Disk, nen SQLite database va anh upload co the mat khi Render redeploy/restart. De dung production, chuyen `render.yaml` sang paid plan co Persistent Disk va dat `DATABASE_URL`/`UPLOAD_DIR` ve `/var/data`.
 
+## Auto deploy tu GitHub len Render
+
+Render co auto-deploy On Commit khi service duoc link voi GitHub account. Repo nay cung co GitHub Actions fallback tai `.github/workflows/render-deploy.yml` de goi Render Deploy Hook moi khi push len `main`.
+
+Setup mot lan:
+
+1. Vao Render service `logstudy` -> Settings -> Deploy Hook -> copy URL.
+2. Vao GitHub repo -> Settings -> Secrets and variables -> Actions -> New repository secret.
+3. Dat secret name: `RENDER_DEPLOY_HOOK_URL`.
+4. Paste deploy hook URL vao value va save.
+
+Tu do moi commit push len `main` se tu trigger Render deploy.
+
 ## Email verification va quen mat khau
 
 Register tao user chua verified, gui ma 6 so qua email, sau do user nhap ma tai `/verify-email`. Login se chan user chua verified va gui lai ma moi. Forgot password gui ma reset tai `/forgot-password`, sau do reset tai `/reset-password`.
