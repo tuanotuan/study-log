@@ -40,3 +40,10 @@ Last updated: 2026-07-05
 - Added `docs/` handoff pack.
 - Added explicit rule to update markdown docs after every completed task.
 - Added docs index, project context, architecture, operations, and task log.
+
+## 2026-07-05 - Professional Public UI
+
+- Changed `/` from direct login redirect to a polished public entry page.
+- Added `components/PublicHeader.tsx` with Login/Register actions in the top-right.
+- Updated login and register pages to use the shared header and compact form panels.
+- Preserved logged-in redirect from `/` to `/dashboard`.

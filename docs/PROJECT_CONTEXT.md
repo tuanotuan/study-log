@@ -8,6 +8,7 @@ LogStudy is a daily study logging web app.
 
 Core user story:
 
+- A visitor lands on a professional public home page with Login/Register in the top-right header.
 - A user registers and verifies their email.
 - After studying, the user creates a study commit.
 - One study commit contains a title, note, study date, and exactly one image.
@@ -34,6 +35,13 @@ Live app:
 - Render free web service for demo deploy
 
 ## Current Important Behavior
+
+Public UI:
+
+- `/` is a polished product entry page, not an oversized login form.
+- Login/Register live in the top-right header through `components/PublicHeader.tsx`.
+- Logged-in users visiting `/` are redirected to `/dashboard`.
+- Login and register pages use the same top header and compact form panels.
 
 Authentication:
 

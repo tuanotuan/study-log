@@ -10,6 +10,7 @@ Important paths:
 - `app/actions/auth.ts` - auth, verification, forgot/reset password server actions.
 - `app/actions/commits.ts` - create/delete study commit server actions.
 - `components/` - dashboard form, commit list, contribution graph.
+- `components/PublicHeader.tsx` - public marketing/auth header with Login/Register actions.
 - `lib/` - Prisma, session, date helpers, stats, upload path helpers, email helper.
 - `prisma/schema.prisma` - database schema.
 - `scripts/ensure-db.mjs` - idempotent DB bootstrap used locally and on Render.
@@ -21,7 +22,7 @@ Important paths:
 
 Public or auth routes:
 
-- `/` - redirects to `/dashboard` if logged in, otherwise `/login`.
+- `/` - public product entry page with dashboard/contribution preview; redirects logged-in users to `/dashboard`.
 - `/login` - email/password login.
 - `/register` - account creation.
 - `/verify-email` - verifies a 6-digit email code.

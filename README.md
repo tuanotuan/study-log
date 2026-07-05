@@ -2,6 +2,8 @@
 
 Web app ghi lai qua trinh hoc tap moi ngay bang cac "commit hoc tap": 1 anh, ghi chu ngan va ngay hoc. App co register/login/logout, dashboard, upload anh local va contribution graph kieu GitHub.
 
+Trang public co header voi Login/Register o goc tren ben phai; user da login vao `/` se duoc dua thang toi dashboard.
+
 ## Stack
 
 - Next.js + TypeScript
