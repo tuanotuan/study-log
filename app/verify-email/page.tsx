@@ -7,6 +7,7 @@ type VerifyEmailPageProps = {
   searchParams?: Promise<{
     email?: string;
     error?: string;
+    debugCode?: string;
     sent?: string;
   }>;
 };
@@ -31,6 +32,13 @@ export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageP
         {params?.sent ? (
           <div className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
             Verification code sent.
+          </div>
+        ) : null}
+
+        {params?.debugCode ? (
+          <div className="mb-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+            Email is not configured yet. Test code:{" "}
+            <span className="font-semibold tracking-wide">{params.debugCode}</span>
           </div>
         ) : null}
 

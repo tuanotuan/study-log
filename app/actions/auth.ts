@@ -40,6 +40,23 @@ function codeExpiresAt() {
   return new Date(Date.now() + CODE_TTL_MS);
 }
 
+function shouldExposeDebugCode() {
+  return process.env.AUTH_CODE_DEBUG === "true";
+}
+
+function codeRedirectParams(email: string, emailSent: boolean, code: string) {
+  const params: Record<string, string> = {
+    email,
+    sent: "1"
+  };
+
+  if (!emailSent && shouldExposeDebugCode()) {
+    params.debugCode = code;
+  }
+
+  return params;
+}
+
 async function createEmailVerificationCode(userId: string, email: string) {
   const code = generateCode();
   const codeHash = await bcrypt.hash(code, 10);
@@ -56,7 +73,8 @@ async function createEmailVerificationCode(userId: string, email: string) {
     }
   });
 
-  return sendAuthCodeEmail(email, code, "verify");
+  const emailSent = await sendAuthCodeEmail(email, code, "verify");
+  return { code, emailSent };
 }
 
 async function createPasswordResetCode(userId: string, email: string) {
@@ -75,7 +93,8 @@ async function createPasswordResetCode(userId: string, email: string) {
     }
   });
 
-  return sendAuthCodeEmail(email, code, "reset");
+  const emailSent = await sendAuthCodeEmail(email, code, "reset");
+  return { code, emailSent };
 }
 
 export async function registerAction(formData: FormData) {
@@ -129,8 +148,8 @@ export async function registerAction(formData: FormData) {
     });
   }
 
-  await createEmailVerificationCode(user.id, user.email);
-  redirectWithParams("/verify-email", { email, sent: "1" });
+  const result = await createEmailVerificationCode(user.id, user.email);
+  redirectWithParams("/verify-email", codeRedirectParams(email, result.emailSent, result.code));
 }
 
 export async function verifyEmailAction(formData: FormData) {
@@ -217,8 +236,8 @@ export async function resendVerificationAction(formData: FormData) {
     redirect("/login?verified=1");
   }
 
-  await createEmailVerificationCode(user.id, user.email);
-  redirectWithParams("/verify-email", { email, sent: "1" });
+  const result = await createEmailVerificationCode(user.id, user.email);
+  redirectWithParams("/verify-email", codeRedirectParams(email, result.emailSent, result.code));
 }
 
 export async function loginAction(formData: FormData) {
@@ -250,9 +269,9 @@ export async function loginAction(formData: FormData) {
   }
 
   if (!user.emailVerifiedAt) {
-    await createEmailVerificationCode(user.id, user.email);
+    const result = await createEmailVerificationCode(user.id, user.email);
     redirectWithParams("/verify-email", {
-      email,
+      ...codeRedirectParams(email, result.emailSent, result.code),
       error: "Email chua xac thuc. Minh da gui lai ma moi."
     });
   }
@@ -276,11 +295,12 @@ export async function requestPasswordResetAction(formData: FormData) {
     }
   });
 
-  if (user) {
-    await createPasswordResetCode(user.id, user.email);
+  if (!user) {
+    redirectWithError("/forgot-password", "Email nay chua co tai khoan.");
   }
 
-  redirectWithParams("/reset-password", { email, sent: "1" });
+  const result = await createPasswordResetCode(user.id, user.email);
+  redirectWithParams("/reset-password", codeRedirectParams(email, result.emailSent, result.code));
 }
 
 export async function resetPasswordAction(formData: FormData) {

@@ -29,6 +29,7 @@ DATABASE_URL="file:./dev.db"
 SESSION_SECRET="replace-with-a-long-random-secret"
 UPLOAD_DIR="./public/uploads"
 APP_URL="http://localhost:3000"
+AUTH_CODE_DEBUG="true"
 
 # Optional SMTP. If omitted, auth codes are printed in server logs.
 # Gmail requires a Google App Password, not your normal Gmail password.
@@ -78,6 +79,7 @@ Render config chinh:
 - `DATABASE_URL`: `file:/tmp/logstudy.db`
 - `UPLOAD_DIR`: `/tmp/logstudy-uploads`
 - `APP_URL`: `https://logstudy.onrender.com`
+- `AUTH_CODE_DEBUG`: `true`
 - `SESSION_SECRET`: Render tu generate
 
 Ban free khong co Persistent Disk, nen SQLite database va anh upload co the mat khi Render redeploy/restart. De dung production, chuyen `render.yaml` sang paid plan co Persistent Disk va dat `DATABASE_URL`/`UPLOAD_DIR` ve `/var/data`.
@@ -110,7 +112,7 @@ SMTP_FROM="LogStudy <your-gmail@gmail.com>"
 SMTP_SECURE=true
 ```
 
-Voi Gmail, `SMTP_PASS` phai la Google App Password, khong phai mat khau Gmail thuong. Neu chua cau hinh SMTP, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`.
+Voi Gmail, `SMTP_PASS` phai la Google App Password, khong phai mat khau Gmail thuong. Neu chua cau hinh SMTP, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Khi `AUTH_CODE_DEBUG=true`, app cung hien test code ngay tren trang verify/reset de demo nhanh.
 
 ## Scripts
 
