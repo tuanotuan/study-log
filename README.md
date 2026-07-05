@@ -112,7 +112,7 @@ SMTP_FROM="LogStudy <your-gmail@gmail.com>"
 SMTP_SECURE=true
 ```
 
-Voi Gmail, `SMTP_PASS` phai la Google App Password, khong phai mat khau Gmail thuong. Neu chua cau hinh SMTP, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Khi `AUTH_CODE_DEBUG=true`, app cung hien test code ngay tren trang verify/reset de demo nhanh.
+Voi Gmail, `SMTP_PASS` phai la Google App Password, khong phai mat khau Gmail thuong. Neu chua cau hinh SMTP, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Mac dinh app hien test code ngay tren trang verify/reset de demo nhanh; dat `AUTH_CODE_DEBUG=false` de tat.
 
 ## Scripts
 

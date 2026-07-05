@@ -41,7 +41,7 @@ function codeExpiresAt() {
 }
 
 function shouldExposeDebugCode() {
-  return process.env.AUTH_CODE_DEBUG === "true";
+  return process.env.AUTH_CODE_DEBUG !== "false";
 }
 
 function codeRedirectParams(email: string, emailSent: boolean, code: string) {
