@@ -63,13 +63,13 @@ Render config chinh:
 
 - Runtime: Node
 - Build Command: `npm ci && npm run build`
-- Start Command: `npm run db:deploy && npm run start`
-- Persistent Disk mount path: `/var/data`
-- `DATABASE_URL`: `file:/var/data/logstudy.db`
-- `UPLOAD_DIR`: `/var/data/uploads`
+- Start Command: `npm run db:ensure && npm run start`
+- Free plan demo: `plan: free`
+- `DATABASE_URL`: `file:/tmp/logstudy.db`
+- `UPLOAD_DIR`: `/tmp/logstudy-uploads`
 - `SESSION_SECRET`: Render tu generate
 
-SQLite database va anh upload duoc luu trong Persistent Disk. Neu khong dung disk, du lieu se mat khi Render redeploy/restart.
+Ban free khong co Persistent Disk, nen SQLite database va anh upload co the mat khi Render redeploy/restart. De dung production, chuyen `render.yaml` sang paid plan co Persistent Disk va dat `DATABASE_URL`/`UPLOAD_DIR` ve `/var/data`.
 
 ## Scripts
 
