@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: logstudy
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: npm run db:ensure && npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: DATABASE_URL
+        value: file:/var/data/logstudy.db
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+      - key: SESSION_SECRET
+        generateValue: true
+    disk:
+      name: logstudy-data
+      mountPath: /var/data
+      sizeGB: 5
