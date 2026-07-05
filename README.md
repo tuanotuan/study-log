@@ -10,6 +10,12 @@ Web app ghi lai qua trinh hoc tap moi ngay bang cac "commit hoc tap": 1 anh, ghi
 - Auth email/password voi password hash bang bcrypt
 - Session cookie co chu ky HMAC
 
+## Project handoff docs
+
+Sau khi chuyen context, doc cac file trong `docs/` theo thu tu trong `docs/README.md` de hieu toan bo trang thai hien tai cua project.
+
+Quy tac bat buoc: sau moi task hoan thanh, cap nhat cac file markdown lien quan roi commit va push cung voi code.
+
 ## Cai dat local
 
 ```bash

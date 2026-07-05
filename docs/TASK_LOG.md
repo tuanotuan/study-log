@@ -1,0 +1,42 @@
+# Task Log
+
+Last updated: 2026-07-05
+
+## 2026-07-04 - Initial App
+
+- Created Next.js + TypeScript + Tailwind + Prisma + SQLite app.
+- Added register/login/logout with bcrypt and signed session cookie.
+- Added dashboard, study commit form, upload handling, recent commit list.
+- Added GitHub-like contribution graph.
+- Added delete commit with per-user ownership checks.
+- Added README and local scripts.
+
+## 2026-07-04 - Stats Change
+
+- Replaced "best study day" statistic with max streak.
+
+## 2026-07-05 - Render Deployment
+
+- Added Render Blueprint.
+- Added `/uploads/[filename]` route so uploaded images can be served from `UPLOAD_DIR`.
+- Added `scripts/ensure-db.mjs`.
+- Changed Render config to free plan for demo.
+- Added Git repo remote and pushed to `tuanotuan/study-log`.
+- Added `autoDeployTrigger: commit`.
+- Added GitHub Actions deploy hook workflow.
+
+## 2026-07-05 - Email Verification And Password Reset
+
+- Added `EmailVerificationCode` and `PasswordResetCode` models.
+- Added email verification flow.
+- Added forgot/reset password flow.
+- Added Nodemailer SMTP helper.
+- Added Gmail SMTP env documentation.
+- Existing users are marked verified by migration/bootstrap.
+- Demo fallback auth codes are visible unless `AUTH_CODE_DEBUG=false`.
+
+## 2026-07-05 - Documentation Handoff Pack
+
+- Added `docs/` handoff pack.
+- Added explicit rule to update markdown docs after every completed task.
+- Added docs index, project context, architecture, operations, and task log.

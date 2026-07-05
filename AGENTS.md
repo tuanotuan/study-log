@@ -77,3 +77,8 @@ Acceptance criteria:
 - Dashboard reload lại vẫn thấy dữ liệu.
 - Contribution graph phản ánh đúng số commit theo ngày.
 - User A không thấy dữ liệu của User B.
+Ongoing workflow requirements:
+- After every completed task, update relevant markdown documentation.
+- The handoff docs live in `docs/`; start with `docs/README.md`.
+- Keep `README.md`, `docs/PROJECT_CONTEXT.md`, `docs/ARCHITECTURE.md`, `docs/OPERATIONS.md`, and `docs/TASK_LOG.md` current when behavior, code structure, env vars, deployment, or workflow changes.
+- End completed tasks by running relevant checks, committing, and pushing to `origin/main`, unless the user explicitly says otherwise.
