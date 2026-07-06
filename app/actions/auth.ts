@@ -9,10 +9,19 @@ import { clearSession, createSession } from "@/lib/session";
 import { sendAuthCodeEmail } from "@/lib/email";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const USERNAME_PATTERN = /^[a-z0-9_]{3,24}$/;
 const CODE_PATTERN = /^\d{6}$/;
 const CODE_TTL_MS = 10 * 60 * 1000;
 
 function normalizeEmail(value: FormDataEntryValue | null) {
+  return typeof value === "string" ? value.trim().toLowerCase() : "";
+}
+
+function normalizeUsername(value: FormDataEntryValue | null) {
+  return typeof value === "string" ? value.trim().toLowerCase() : "";
+}
+
+function normalizeIdentifier(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
 
@@ -100,9 +109,14 @@ async function createPasswordResetCode(userId: string, email: string) {
 
 export async function registerAction(formData: FormData) {
   const t = getCopy(await getLocale());
+  const username = normalizeUsername(formData.get("username"));
   const email = normalizeEmail(formData.get("email"));
   const password = getPassword(formData.get("password"));
   const confirmPassword = getPassword(formData.get("confirmPassword"));
+
+  if (!USERNAME_PATTERN.test(username)) {
+    redirectWithError("/register", t.errors.invalidUsername);
+  }
 
   if (!EMAIL_PATTERN.test(email)) {
     redirectWithError("/register", t.errors.invalidEmail);
@@ -116,25 +130,38 @@ export async function registerAction(formData: FormData) {
     redirectWithError("/register", t.errors.passwordMismatch);
   }
 
-  const existingUser = await prisma.user.findUnique({
+  const existingEmailUser = await prisma.user.findUnique({
     where: { email },
     select: {
       id: true,
       email: true,
+      username: true,
       emailVerifiedAt: true
     }
   });
 
-  if (existingUser?.emailVerifiedAt) {
+  const existingUsernameUser = await prisma.user.findUnique({
+    where: { username },
+    select: {
+      id: true
+    }
+  });
+
+  if (existingUsernameUser && existingUsernameUser.id !== existingEmailUser?.id) {
+    redirectWithError("/register", t.errors.usernameExists);
+  }
+
+  if (existingEmailUser?.emailVerifiedAt) {
     redirectWithError("/register", t.errors.emailExists);
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
   const user =
-    existingUser ??
+    existingEmailUser ??
     (await prisma.user.create({
       data: {
         email,
+        username,
         passwordHash
       },
       select: {
@@ -143,10 +170,10 @@ export async function registerAction(formData: FormData) {
       }
     }));
 
-  if (existingUser && !existingUser.emailVerifiedAt) {
+  if (existingEmailUser && !existingEmailUser.emailVerifiedAt) {
     await prisma.user.update({
-      where: { id: existingUser.id },
-      data: { passwordHash }
+      where: { id: existingEmailUser.id },
+      data: { passwordHash, username }
     });
   }
 
@@ -246,18 +273,21 @@ export async function resendVerificationAction(formData: FormData) {
 
 export async function loginAction(formData: FormData) {
   const t = getCopy(await getLocale());
-  const email = normalizeEmail(formData.get("email"));
+  const identifier = normalizeIdentifier(formData.get("identifier"));
   const password = getPassword(formData.get("password"));
 
-  if (!EMAIL_PATTERN.test(email) || password.length === 0) {
+  if (identifier.length === 0 || password.length === 0) {
     redirectWithError("/login", t.errors.invalidLogin);
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [{ email: identifier }, { username: identifier }]
+    },
     select: {
       id: true,
       email: true,
+      username: true,
       passwordHash: true,
       emailVerifiedAt: true
     }
@@ -276,7 +306,7 @@ export async function loginAction(formData: FormData) {
   if (!user.emailVerifiedAt) {
     const result = await createEmailVerificationCode(user.id, user.email);
     redirectWithParams("/verify-email", {
-      ...codeRedirectParams(email, result.emailSent, result.code),
+      ...codeRedirectParams(user.email, result.emailSent, result.code),
       error: t.errors.unverified
     });
   }

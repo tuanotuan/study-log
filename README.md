@@ -9,7 +9,7 @@ Trang public co header voi Login/Register o goc tren ben phai; user da login vao
 - Next.js + TypeScript
 - Tailwind CSS
 - SQLite + Prisma
-- Auth email/password voi password hash bang bcrypt
+- Auth username/email/password voi password hash bang bcrypt
 - Session cookie co chu ky HMAC
 - UI bilingual: Vietnamese + English
 
@@ -108,7 +108,7 @@ Tu do moi commit push len `main` se tu trigger Render deploy.
 
 ## Email verification va quen mat khau
 
-Register tao user chua verified, gui ma 6 so qua email, sau do user nhap ma tai `/verify-email`. Login se chan user chua verified va gui lai ma moi. Forgot password gui ma reset tai `/forgot-password`, sau do reset tai `/reset-password`.
+Register yeu cau username rieng, email va password; user moi can verify email bang ma 6 so tai `/verify-email`. Login chap nhan email hoac username, nhung van chan user chua verified va gui lai ma moi. Forgot password van dung email tai `/forgot-password`, sau do reset tai `/reset-password`.
 
 De gui email that tren Render, them cac env vars trong service:
 

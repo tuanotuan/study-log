@@ -1,6 +1,6 @@
 # Architecture
 
-Last updated: 2026-07-05
+Last updated: 2026-07-06
 
 ## App Structure
 
@@ -25,8 +25,8 @@ Important paths:
 Public or auth routes:
 
 - `/` - public product entry page with dashboard/contribution preview; redirects logged-in users to `/dashboard`.
-- `/login` - email/password login.
-- `/register` - account creation.
+- `/login` - email-or-username/password login.
+- `/register` - account creation with username, email, and password.
 - `/verify-email` - verifies a 6-digit email code.
 - `/forgot-password` - requests password reset code.
 - `/reset-password` - resets password with a 6-digit code.
@@ -48,7 +48,7 @@ Protected route:
 
 Prisma models:
 
-- `User`: `id`, `email`, `passwordHash`, `emailVerifiedAt`, `createdAt`.
+- `User`: `id`, `email`, `username`, `passwordHash`, `emailVerifiedAt`, `createdAt`.
 - `StudyCommit`: `id`, `userId`, `title`, `note`, `imageUrl`, `studyDate`, `createdAt`.
 - `EmailVerificationCode`: `id`, `userId`, `codeHash`, `expiresAt`, `createdAt`.
 - `PasswordResetCode`: `id`, `userId`, `codeHash`, `expiresAt`, `createdAt`.
@@ -75,6 +75,8 @@ Important auth rules:
 - Unauthenticated users cannot create commits.
 - Unauthenticated users cannot access dashboard.
 - Users can only query/delete their own commits.
+- Registration requires a unique username.
+- Login accepts either email or username.
 - Login requires `emailVerifiedAt` to be set.
 
 ## Study Commits
@@ -137,4 +139,4 @@ If SMTP is missing or fails:
 npm run db:ensure && npm run start
 ```
 
-It creates missing tables/indexes and adds `emailVerifiedAt` if missing.
+It creates missing tables/indexes and adds `emailVerifiedAt` or `username` if missing.

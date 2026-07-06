@@ -1,6 +1,6 @@
 # Task Log
 
-Last updated: 2026-07-05
+Last updated: 2026-07-06
 
 ## 2026-07-04 - Initial App
 
@@ -54,3 +54,11 @@ Last updated: 2026-07-05
 - Added `components/LanguageSwitcher.tsx` and `app/actions/language.ts`.
 - Locale persists in `logstudy_locale`.
 - Updated public page, auth pages, dashboard, commit form, commit list, graph labels, and server validation errors to use localized copy.
+
+## 2026-07-06 - Username Login
+
+- Added nullable unique `User.username` so existing accounts keep working.
+- Registration now requires a unique username.
+- Login now accepts either email or username.
+- Dashboard header shows `@username` when available.
+- Updated DB bootstrap to add the username column/index on existing SQLite databases.

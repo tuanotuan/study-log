@@ -56,6 +56,21 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
 
           <form action={registerAction} className="space-y-4">
             <label className="block">
+              <span className="text-sm font-medium text-ink">{t.common.username}</span>
+              <input
+                className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"
+                name="username"
+                type="text"
+                autoComplete="username"
+                minLength={3}
+                maxLength={24}
+                pattern="[A-Za-z0-9_]{3,24}"
+                required
+              />
+              <span className="mt-1 block text-xs text-muted">{t.auth.usernameHelp}</span>
+            </label>
+
+            <label className="block">
               <span className="text-sm font-medium text-ink">{t.common.email}</span>
               <input
                 className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-blue-100"

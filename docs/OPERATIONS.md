@@ -1,6 +1,6 @@
 # Operations
 
-Last updated: 2026-07-05
+Last updated: 2026-07-06
 
 ## Local Development
 
@@ -136,6 +136,15 @@ If SMTP is configured:
 2. Set `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM` in Render.
 3. Trigger the flow and check the mailbox.
 4. If delivery fails, the app falls back to logs and possibly visible debug code.
+
+## How To Test Username Login
+
+1. Open `/register`.
+2. Create a new account with a unique username, email, and password.
+3. Verify the email with the 6-digit code.
+4. Login once with the email.
+5. Logout, then login again with the username and the same password.
+6. Try registering another account with the same username; it should be rejected.
 
 ## How To Test Language Switching
 

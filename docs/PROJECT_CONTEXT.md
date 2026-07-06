@@ -1,6 +1,6 @@
 # Project Context
 
-Last updated: 2026-07-05
+Last updated: 2026-07-06
 
 ## Product
 
@@ -10,7 +10,7 @@ Core user story:
 
 - A visitor lands on a professional public home page with Login/Register in the top-right header.
 - The interface supports Vietnamese and English through a VI/EN switcher.
-- A user registers and verifies their email.
+- A user registers with a username, email, and password, then verifies their email.
 - After studying, the user creates a study commit.
 - One study commit contains a title, note, study date, and exactly one image.
 - The dashboard shows recent commits and a GitHub-like contribution graph.
@@ -49,10 +49,12 @@ Public UI:
 
 Authentication:
 
-- Register checks if the email already exists.
+- Register checks if the email or username already exists.
+- Usernames are lowercase, unique, and must be 3-24 letters, numbers, or underscores.
 - If the email exists and is already verified, registration is rejected.
 - If the email exists but is not verified, registration updates the password and sends a new verification code.
 - Verification code is 6 digits, hashed with bcrypt in the database, expires after 10 minutes.
+- Login accepts either email or username.
 - Login requires a verified email.
 - Login for an unverified user sends a fresh verification code and redirects to `/verify-email`.
 - Forgot password requires an existing email.

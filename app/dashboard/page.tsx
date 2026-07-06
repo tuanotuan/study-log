@@ -49,7 +49,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
           <div className="flex flex-wrap items-center gap-3">
             <LanguageSwitcher locale={locale} returnTo="/dashboard" />
-            <span className="max-w-[58vw] truncate text-sm text-muted">{user.email}</span>
+            <span className="max-w-[58vw] truncate text-sm text-muted">
+              {user.username ? `@${user.username}` : user.email}
+            </span>
             <form action={logoutAction}>
               <button
                 className="rounded-md border border-border bg-white px-3 py-2 text-sm font-medium text-ink transition hover:bg-gray-50"

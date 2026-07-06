@@ -53,6 +53,7 @@ const statements = [
   `CREATE TABLE IF NOT EXISTS "User" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
+    "username" TEXT,
     "passwordHash" TEXT NOT NULL,
     "emailVerifiedAt" DATETIME,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -105,6 +106,12 @@ try {
       `UPDATE "User" SET "emailVerifiedAt" = "createdAt" WHERE "emailVerifiedAt" IS NULL`
     );
   }
+
+  if (!(await columnExists("User", "username"))) {
+    await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "username" TEXT`);
+  }
+
+  await prisma.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "User_username_key" ON "User"("username")`);
 
   console.log("Database is ready.");
 } finally {
