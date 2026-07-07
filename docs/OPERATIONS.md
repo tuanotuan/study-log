@@ -148,6 +148,14 @@ If Resend is configured:
 5. Logout, then login again with the username and the same password.
 6. Try registering another account with the same username; it should be rejected.
 
+## How To Test Profiles
+
+1. Login and open `/profile/edit`.
+2. Upload an avatar, set display name and bio, then save.
+3. Confirm redirect to `/u/<username>` and the public profile shows the new data.
+4. Open `/dashboard`; the header should show the avatar/name and link to the profile.
+5. Open `/u/<another-username>` if available; it should show only profile metadata, not study commits.
+
 ## How To Test Language Switching
 
 1. Open `/`.

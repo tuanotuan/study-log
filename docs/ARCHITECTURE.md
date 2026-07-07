@@ -1,6 +1,6 @@
 # Architecture
 
-Last updated: 2026-07-06
+Last updated: 2026-07-07
 
 ## App Structure
 
@@ -30,6 +30,8 @@ Public or auth routes:
 - `/verify-email` - verifies a 6-digit email code.
 - `/forgot-password` - requests password reset code.
 - `/reset-password` - resets password with a 6-digit code.
+- `/profile/edit` - protected profile editor for avatar, display name, and bio.
+- `/u/[username]` - public profile by username.
 - `/uploads/[filename]` - serves uploaded images from `UPLOAD_DIR`.
 
 Language:
@@ -48,7 +50,7 @@ Protected route:
 
 Prisma models:
 
-- `User`: `id`, `email`, `username`, `passwordHash`, `emailVerifiedAt`, `createdAt`.
+- `User`: `id`, `email`, `username`, `displayName`, `bio`, `avatarUrl`, `passwordHash`, `emailVerifiedAt`, `createdAt`.
 - `StudyCommit`: `id`, `userId`, `title`, `note`, `imageUrl`, `studyDate`, `createdAt`.
 - `EmailVerificationCode`: `id`, `userId`, `codeHash`, `expiresAt`, `createdAt`.
 - `PasswordResetCode`: `id`, `userId`, `codeHash`, `expiresAt`, `createdAt`.
@@ -78,6 +80,21 @@ Important auth rules:
 - Registration requires a unique username.
 - Login accepts either email or username.
 - Login requires `emailVerifiedAt` to be set.
+
+## Profiles
+
+Files:
+
+- `app/actions/profile.ts`
+- `app/profile/edit/page.tsx`
+- `app/u/[username]/page.tsx`
+
+Rules:
+
+- Only the logged-in owner can update their profile.
+- Public profile lookup is by unique lowercase username.
+- Public profile pages do not show another user's study commits.
+- Avatars are uploaded to `UPLOAD_DIR` and stored as `/uploads/<filename>`.
 
 ## Study Commits
 
@@ -140,4 +157,4 @@ If email delivery is missing or fails:
 npm run db:ensure && npm run start
 ```
 
-It creates missing tables/indexes and adds `emailVerifiedAt` or `username` if missing.
+It creates missing tables/indexes and adds `emailVerifiedAt`, `username`, or profile columns if missing.

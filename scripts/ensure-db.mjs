@@ -54,6 +54,9 @@ const statements = [
     "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
     "username" TEXT,
+    "displayName" TEXT,
+    "bio" TEXT,
+    "avatarUrl" TEXT,
     "passwordHash" TEXT NOT NULL,
     "emailVerifiedAt" DATETIME,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -109,6 +112,18 @@ try {
 
   if (!(await columnExists("User", "username"))) {
     await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "username" TEXT`);
+  }
+
+  if (!(await columnExists("User", "displayName"))) {
+    await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "displayName" TEXT`);
+  }
+
+  if (!(await columnExists("User", "bio"))) {
+    await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "bio" TEXT`);
+  }
+
+  if (!(await columnExists("User", "avatarUrl"))) {
+    await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "avatarUrl" TEXT`);
   }
 
   await prisma.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "User_username_key" ON "User"("username")`);

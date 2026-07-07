@@ -73,3 +73,11 @@ Last updated: 2026-07-07
 - Removed old mail-server env vars from Render Blueprint, local env example, and docs.
 - Removed old mail-server fallback code; auth emails now use Resend when configured, otherwise fallback test codes/logs.
 - Removed old mail-server dependencies.
+
+## 2026-07-07 - User Profiles
+
+- Added profile fields to `User`: `displayName`, `bio`, and `avatarUrl`.
+- Added protected `/profile/edit` page with avatar upload, display name, and bio editing.
+- Added public `/u/[username]` profile pages.
+- Dashboard now links to the current user's profile and profile editor.
+- Public profiles keep study commits private.

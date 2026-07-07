@@ -11,6 +11,8 @@ Core user story:
 - A visitor lands on a professional public home page with Login/Register in the top-right header.
 - The interface supports Vietnamese and English through a VI/EN switcher.
 - A user registers with a username, email, and password, then verifies their email.
+- Each account has a public profile reachable at `/u/<username>`.
+- Users can edit their own avatar, display name, and bio.
 - After studying, the user creates a study commit.
 - One study commit contains a title, note, study date, and exactly one image.
 - The dashboard shows recent commits and a GitHub-like contribution graph.
@@ -46,6 +48,7 @@ Public UI:
 - Locale is stored in `logstudy_locale` and changed through `components/LanguageSwitcher.tsx`.
 - Logged-in users visiting `/` are redirected to `/dashboard`.
 - Login and register pages use the same top header and compact form panels.
+- Public profile pages show profile metadata only; study commits remain private to their owner.
 
 Authentication:
 
@@ -59,6 +62,13 @@ Authentication:
 - Login for an unverified user sends a fresh verification code and redirects to `/verify-email`.
 - Forgot password requires an existing email.
 - Reset password uses a 6-digit code, then updates password and marks email verified.
+
+Profiles:
+
+- `/u/<username>` shows public profile fields: avatar, display name, username, bio, and joined date.
+- `/profile/edit` requires login and updates only the current user's profile.
+- Avatar images are stored in the same upload storage and served through `/uploads/:filename`.
+- Public profiles do not expose another user's study commits.
 
 Email:
 

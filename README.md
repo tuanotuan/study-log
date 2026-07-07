@@ -1,8 +1,10 @@
 # LogStudy
 
-Web app ghi lai qua trinh hoc tap moi ngay bang cac "commit hoc tap": 1 anh, ghi chu ngan va ngay hoc. App co register/login/logout, dashboard, upload anh local va contribution graph kieu GitHub.
+Web app ghi lai qua trinh hoc tap moi ngay bang cac "commit hoc tap": 1 anh, ghi chu ngan va ngay hoc. App co register/login/logout, dashboard, ho so user, upload anh local va contribution graph kieu GitHub.
 
 Trang public co header voi Login/Register o goc tren ben phai; user da login vao `/` se duoc dua thang toi dashboard. UI ho tro tieng Viet va English qua nut VI/EN.
+
+Moi tai khoan co ho so public tai `/u/<username>` voi avatar, ten hien thi va tieu su. Trang `/profile/edit` cho user dang login cap nhat ho so cua chinh minh.
 
 ## Stack
 

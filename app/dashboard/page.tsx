@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { logoutAction } from "@/app/actions/auth";
 import { CommitForm } from "@/components/CommitForm";
 import { CommitList } from "@/components/CommitList";
@@ -49,9 +50,20 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
           <div className="flex flex-wrap items-center gap-3">
             <LanguageSwitcher locale={locale} returnTo="/dashboard" />
-            <span className="max-w-[58vw] truncate text-sm text-muted">
-              {user.username ? `@${user.username}` : user.email}
-            </span>
+            <Avatar avatarUrl={user.avatarUrl} name={user.displayName || user.username || user.email} />
+            {user.username ? (
+              <Link className="max-w-[42vw] truncate text-sm font-medium text-muted hover:text-ink" href={`/u/${user.username}`}>
+                {user.displayName || `@${user.username}`}
+              </Link>
+            ) : (
+              <span className="max-w-[42vw] truncate text-sm text-muted">{user.email}</span>
+            )}
+            <Link
+              className="rounded-md border border-border bg-white px-3 py-2 text-sm font-medium text-ink transition hover:bg-gray-50"
+              href="/profile/edit"
+            >
+              {t.profile.editProfile}
+            </Link>
             <form action={logoutAction}>
               <button
                 className="rounded-md border border-border bg-white px-3 py-2 text-sm font-medium text-ink transition hover:bg-gray-50"
@@ -75,5 +87,26 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </section>
       </div>
     </main>
+  );
+}
+
+function Avatar({ avatarUrl, name }: { avatarUrl: string | null; name: string }) {
+  const initial = name.trim().charAt(0).toUpperCase() || "L";
+
+  if (avatarUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        alt={name}
+        className="h-10 w-10 rounded-md border border-border object-cover"
+        src={avatarUrl}
+      />
+    );
+  }
+
+  return (
+    <div className="grid h-10 w-10 place-items-center rounded-md border border-border bg-white text-sm font-semibold text-muted">
+      {initial}
+    </div>
   );
 }

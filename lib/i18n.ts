@@ -128,6 +128,22 @@ export const copy = {
       activeDays: "Số ngày có học",
       days: "ngày"
     },
+    profile: {
+      dashboard: "Dashboard",
+      editProfile: "Chỉnh hồ sơ",
+      editTitle: "Chỉnh sửa hồ sơ",
+      viewProfile: "Xem hồ sơ",
+      displayName: "Tên hiển thị",
+      bio: "Tiểu sử",
+      bioHelp: "Tối đa 280 ký tự.",
+      avatar: "Ảnh đại diện",
+      removeAvatar: "Xóa ảnh đại diện hiện tại",
+      save: "Lưu hồ sơ",
+      cancel: "Hủy",
+      updated: "Đã cập nhật hồ sơ.",
+      emptyBio: "Chưa có tiểu sử.",
+      joined: "Tham gia"
+    },
     errors: {
       invalidEmail: "Email không hợp lệ.",
       invalidUsername: "Tên user cần 3-24 ký tự, chỉ gồm chữ, số hoặc dấu gạch dưới.",
@@ -147,6 +163,9 @@ export const copy = {
       missingImage: "Vui lòng upload đúng 1 ảnh.",
       invalidImage: "Ảnh phải là JPG, PNG, WEBP hoặc GIF.",
       largeImage: "Ảnh tối đa 5MB.",
+      largeAvatar: "Ảnh đại diện tối đa 3MB.",
+      invalidDisplayName: "Tên hiển thị tối đa 60 ký tự.",
+      invalidBio: "Tiểu sử tối đa 280 ký tự.",
       unknownImage: "Không nhận diện được định dạng ảnh.",
       missingCommit: "Không tìm thấy commit cần xóa.",
       deleteForbidden: "Bạn không có quyền xóa commit này."
@@ -257,6 +276,22 @@ export const copy = {
       activeDays: "Active days",
       days: "days"
     },
+    profile: {
+      dashboard: "Dashboard",
+      editProfile: "Edit profile",
+      editTitle: "Edit profile",
+      viewProfile: "View profile",
+      displayName: "Display name",
+      bio: "Bio",
+      bioHelp: "Up to 280 characters.",
+      avatar: "Avatar",
+      removeAvatar: "Remove current avatar",
+      save: "Save profile",
+      cancel: "Cancel",
+      updated: "Profile updated.",
+      emptyBio: "No bio yet.",
+      joined: "Joined"
+    },
     errors: {
       invalidEmail: "Invalid email.",
       invalidUsername: "Username must be 3-24 characters and only use letters, numbers, or underscore.",
@@ -276,6 +311,9 @@ export const copy = {
       missingImage: "Please upload exactly one image.",
       invalidImage: "Image must be JPG, PNG, WEBP, or GIF.",
       largeImage: "Image must be at most 5MB.",
+      largeAvatar: "Avatar must be at most 3MB.",
+      invalidDisplayName: "Display name must be at most 60 characters.",
+      invalidBio: "Bio must be at most 280 characters.",
       unknownImage: "Could not identify image format.",
       missingCommit: "Commit was not found.",
       deleteForbidden: "You do not have permission to delete this commit."

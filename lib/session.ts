@@ -113,6 +113,9 @@ export async function getCurrentUser() {
       id: true,
       email: true,
       username: true,
+      displayName: true,
+      bio: true,
+      avatarUrl: true,
       createdAt: true
     }
   });
