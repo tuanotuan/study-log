@@ -58,12 +58,6 @@ Email:
 
 - `RESEND_API_KEY`
 - `RESEND_FROM`
-- `SMTP_HOST`
-- `SMTP_PORT`
-- `SMTP_USER`
-- `SMTP_PASS`
-- `SMTP_FROM`
-- `SMTP_SECURE`
 
 ## Render Deployment
 
@@ -86,7 +80,6 @@ Configured Render env in Blueprint:
 - `APP_URL=https://logstudy.onrender.com`
 - `AUTH_CODE_DEBUG=true`
 - Optional Resend secrets for HTTP email delivery.
-- Gmail SMTP defaults to port 587 with STARTTLS and secrets for user/pass/from.
 
 Free plan caveat:
 
@@ -145,19 +138,6 @@ If Resend is configured:
 1. Trigger the flow and check the mailbox.
 2. Check Render Logs for `[LogStudy resend email sent]`.
 3. If it fails, check `[LogStudy resend email error]`; the visible fallback code can still be used for testing.
-
-If SMTP is configured instead:
-
-1. Ensure Gmail App Password is used, not normal Gmail password.
-2. Set `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM` in Render.
-3. Trigger the flow and check the mailbox.
-4. If delivery fails or SMTP does not answer within 10 seconds, the app falls back to logs and possibly visible debug code.
-5. Spaces pasted into `SMTP_PASS` are stripped by the app so Google App Passwords can be pasted as shown.
-6. Check Render Logs for `[LogStudy email transport]` to confirm the app resolved SMTP to an IPv4 `connectHost`.
-7. Check Render Logs for `[LogStudy email config missing]` if env vars are absent, `[LogStudy email DNS error]` if IPv4 resolution fails, or `[LogStudy email error]` if Gmail rejects the SMTP attempt.
-8. Gmail SMTP resolves IPv4 before connecting to avoid Render `ENETUNREACH` errors against IPv6 Gmail addresses.
-9. Prefer `SMTP_PORT=587` and `SMTP_SECURE=false`; the app requires STARTTLS on 587. Port 465 can time out from Render.
-10. If 587 also times out on Render, use Resend instead of SMTP.
 
 ## How To Test Username Login
 

@@ -40,18 +40,9 @@ UPLOAD_DIR="./public/uploads"
 APP_URL="http://localhost:3000"
 AUTH_CODE_DEBUG="true"
 
-# Optional SMTP. If omitted, auth codes are printed in server logs.
-# Recommended on Render: Resend uses HTTPS and avoids blocked SMTP ports.
+# Optional email provider. If omitted or invalid, auth codes are printed in server logs.
 RESEND_API_KEY=""
 RESEND_FROM="LogStudy <onboarding@resend.dev>"
-
-# SMTP fallback. Gmail requires a Google App Password, not your normal Gmail password.
-SMTP_HOST="smtp.gmail.com"
-SMTP_PORT="587"
-SMTP_USER=""
-SMTP_PASS=""
-SMTP_FROM=""
-SMTP_SECURE="false"
 ```
 
 ## Migrate database
@@ -114,25 +105,14 @@ Tu do moi commit push len `main` se tu trigger Render deploy.
 
 Register yeu cau username rieng, email va password; user moi can verify email bang ma 6 so tai `/verify-email`. Login chap nhan email hoac username, nhung van chan user chua verified va gui lai ma moi. Forgot password van dung email tai `/forgot-password`, sau do reset tai `/reset-password`.
 
-De gui email that tren Render, cach khuyen dung la Resend vi no gui qua HTTPS, tranh loi timeout SMTP:
+De gui email that tren Render, dung Resend vi no gui qua HTTPS va hop voi moi truong cloud free:
 
 ```env
 RESEND_API_KEY=re_xxxxxxxxx
 RESEND_FROM=LogStudy <onboarding@resend.dev>
 ```
 
-Neu khong co `RESEND_API_KEY`, app se fallback sang SMTP:
-
-```env
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-gmail@gmail.com
-SMTP_PASS=your-google-app-password
-SMTP_FROM="LogStudy <your-gmail@gmail.com>"
-SMTP_SECURE=false
-```
-
-Voi Resend, can tao API key va dat `RESEND_FROM`; de production nen verify domain rieng. Voi Gmail SMTP, `SMTP_PASS` phai la Google App Password, khong phai mat khau Gmail thuong. App tu bo khoang trang trong `SMTP_PASS` de co the paste Google App Password theo dinh dang Google hien thi. SMTP tu resolve IPv4 va dung TLS server name cua Gmail de tranh loi Render khong di duoc IPv6 toi Gmail, nhung Render van co the timeout outbound SMTP. Neu chua cau hinh email provider hoac provider loi, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Log co `[LogStudy resend email error]`, `[LogStudy email config missing]`, `[LogStudy email DNS error]`, hoac `[LogStudy email error]` tuy provider loi. Mac dinh app hien test code ngay tren trang verify/reset de demo nhanh; dat `AUTH_CODE_DEBUG=false` de tat.
+Voi Resend, can tao API key va dat `RESEND_FROM`; de production nen verify domain rieng. Neu chua cau hinh Resend hoac Resend loi, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Log co `[LogStudy resend email error]` neu Resend tu choi request. Mac dinh app hien test code ngay tren trang verify/reset de demo nhanh; dat `AUTH_CODE_DEBUG=false` de tat.
 
 ## Scripts
 

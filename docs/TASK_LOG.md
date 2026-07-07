@@ -30,8 +30,7 @@ Last updated: 2026-07-07
 - Added `EmailVerificationCode` and `PasswordResetCode` models.
 - Added email verification flow.
 - Added forgot/reset password flow.
-- Added Nodemailer SMTP helper.
-- Added Gmail SMTP env documentation.
+- Added email delivery helper.
 - Existing users are marked verified by migration/bootstrap.
 - Demo fallback auth codes are visible unless `AUTH_CODE_DEBUG=false`.
 
@@ -63,13 +62,14 @@ Last updated: 2026-07-07
 - Dashboard header shows `@username` when available.
 - Updated DB bootstrap to add the username column/index on existing SQLite databases.
 
-## 2026-07-07 - SMTP Timeout Fallback
+## 2026-07-07 - Email Delivery Migration
 
-- Added 10-second Nodemailer connection/greeting/socket timeouts.
-- Stripped whitespace from `SMTP_PASS` to tolerate copied Gmail App Password formatting.
 - Auth code flows now fall back faster instead of making register/reset submissions appear stuck.
-- Added clearer SMTP diagnostic logs and a more accurate fallback test-code message.
-- Forced Gmail SMTP connections through pre-resolved IPv4 after Render logged `ENETUNREACH` for Gmail IPv6.
-- Added SMTP transport logs to confirm the deployed app is using an IPv4 `connectHost`.
-- Switched Gmail SMTP defaults from implicit TLS port 465 to STARTTLS port 587 after Render timed out connecting to 465.
-- Added Resend HTTP email provider support and made SMTP a fallback when `RESEND_API_KEY` is absent.
+- Added clearer email diagnostic logs and a more accurate fallback test-code message.
+- Added Resend HTTP email provider support after Render timed out connecting to external mail ports.
+
+## 2026-07-07 - Resend-Only Email Cleanup
+
+- Removed old mail-server env vars from Render Blueprint, local env example, and docs.
+- Removed old mail-server fallback code; auth emails now use Resend when configured, otherwise fallback test codes/logs.
+- Removed old mail-server dependencies.

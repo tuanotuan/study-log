@@ -119,23 +119,13 @@ File:
 
 Provider order:
 
-- Resend HTTP API is used first when `RESEND_API_KEY` is configured.
-- SMTP is used only when Resend is not configured.
-- Failed provider sends fall back to logs and optional visible debug code.
+- Resend HTTP API is used when `RESEND_API_KEY` is configured.
+- Missing or failed email sends fall back to logs and optional visible debug code.
 
 Resend env:
 
 - `RESEND_API_KEY`
 - `RESEND_FROM`
-
-SMTP env:
-
-- `SMTP_HOST`
-- `SMTP_PORT`
-- `SMTP_USER`
-- `SMTP_PASS`
-- `SMTP_FROM`
-- `SMTP_SECURE`
 
 If email delivery is missing or fails:
 

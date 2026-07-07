@@ -33,7 +33,6 @@ Live app:
 - bcrypt
 - session cookie signed with HMAC
 - bilingual UI dictionary and locale cookie
-- Nodemailer for SMTP email
 - Resend HTTP email API support for Render-friendly delivery
 - Render free web service for demo deploy
 
@@ -63,18 +62,11 @@ Authentication:
 
 Email:
 
-- SMTP is optional.
-- Resend is preferred when `RESEND_API_KEY` is configured; it sends through HTTPS and avoids Render SMTP timeouts.
-- Gmail SMTP is supported through env vars.
+- Resend sends auth emails through HTTPS when `RESEND_API_KEY` is configured.
 - If email sending is not configured or fails, the code is logged with prefix `[LogStudy email fallback]`.
 - Resend failures are logged as `[LogStudy resend email error]`.
-- Missing SMTP env is logged as `[LogStudy email config missing]`.
-- SMTP/Gmail failures are logged as `[LogStudy email error]` with sanitized diagnostic fields.
 - By default, fallback codes are also shown on verify/reset pages for demo use.
 - Set `AUTH_CODE_DEBUG=false` to hide fallback codes from pages.
-- SMTP sends use a 10-second timeout, then fall back instead of leaving auth forms waiting indefinitely.
-- SMTP resolves an IPv4 address before connecting and keeps the Gmail TLS server name because Render can fail Gmail IPv6 connections with `ENETUNREACH`.
-- Gmail SMTP defaults to port 587 with STARTTLS because port 465 can time out from Render.
 
 Deploy:
 
@@ -87,7 +79,7 @@ Deploy:
 
 - Render free instances can sleep.
 - Render free filesystem is not persistent. SQLite data and uploaded images can disappear after restart/redeploy.
-- Real Gmail delivery requires `SMTP_USER`, `SMTP_PASS` as a Google App Password, and `SMTP_FROM`.
+- Real email delivery requires `RESEND_API_KEY` and `RESEND_FROM`.
 - If deploy auto-trigger does not run, check GitHub secret `RENDER_DEPLOY_HOOK_URL` and Render service Events.
 - Local Windows sometimes fails with Prisma schema engine for `migrate dev`; `npm run db:ensure` is the reliable fallback for the current app.
 
