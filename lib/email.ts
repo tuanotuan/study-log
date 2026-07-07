@@ -46,6 +46,13 @@ async function getTransport() {
 
   const { connectHost, servername } = await resolveSmtpHost(host);
 
+  console.info("[LogStudy email transport]", {
+    host,
+    connectHost,
+    port,
+    secure: process.env.SMTP_SECURE === "true" || port === 465
+  });
+
   const options: SMTPTransport.Options = {
     host: connectHost,
     port,
