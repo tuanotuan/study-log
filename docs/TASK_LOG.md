@@ -81,3 +81,11 @@ Last updated: 2026-07-07
 - Added public `/u/[username]` profile pages.
 - Dashboard now links to the current user's profile and profile editor.
 - Public profiles keep study commits private.
+
+## 2026-07-07 - Persistent Postgres Database
+
+- Switched Prisma datasource from SQLite to Postgres.
+- Replaced the SQLite bootstrap script with `prisma migrate deploy`.
+- Added `DIRECT_URL` for Prisma migrations and made `DATABASE_URL`/`DIRECT_URL` manual Render secrets.
+- Rebuilt migrations as a Postgres baseline for a new external database.
+- Documented Neon free Postgres setup and noted uploads are still not persistent on Render free.

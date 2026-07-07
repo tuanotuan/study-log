@@ -10,7 +10,7 @@ Moi tai khoan co ho so public tai `/u/<username>` voi avatar, ten hien thi va ti
 
 - Next.js + TypeScript
 - Tailwind CSS
-- SQLite + Prisma
+- Postgres + Prisma
 - Auth username/email/password voi password hash bang bcrypt
 - Session cookie co chu ky HMAC
 - UI bilingual: Vietnamese + English
@@ -36,7 +36,8 @@ cp .env.example .env
 Noi dung mau:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
+DIRECT_URL="postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
 SESSION_SECRET="replace-with-a-long-random-secret"
 UPLOAD_DIR="./public/uploads"
 APP_URL="http://localhost:3000"
@@ -47,16 +48,19 @@ RESEND_API_KEY=""
 RESEND_FROM="LogStudy <onboarding@resend.dev>"
 ```
 
-## Migrate database
+## Database
+
+Production dùng external Postgres để dữ liệu sống qua Render deploy/restart. Khuyến nghị free: Neon.
+
+Set cả 2 URL:
+
+- `DATABASE_URL`: Neon pooled connection string cho app runtime.
+- `DIRECT_URL`: Neon direct connection string cho Prisma migrations.
+
+Apply migrations:
 
 ```bash
-npm run prisma:migrate -- --name init
-```
-
-Neu moi truong Windows/Node gap loi `Schema engine error`, co the apply migration SQL co san:
-
-```bash
-npm run db:apply
+npm run db:ensure
 ```
 
 ## Chay dev server
@@ -82,13 +86,14 @@ Render config chinh:
 - Build Command: `npm ci && npm run build`
 - Start Command: `npm run db:ensure && npm run start`
 - Free plan demo: `plan: free`
-- `DATABASE_URL`: `file:/tmp/logstudy.db`
+- `DATABASE_URL`: set thủ công bằng Neon pooled Postgres URL
+- `DIRECT_URL`: set thủ công bằng Neon direct Postgres URL
 - `UPLOAD_DIR`: `/tmp/logstudy-uploads`
 - `APP_URL`: `https://logstudy.onrender.com`
 - `AUTH_CODE_DEBUG`: `true`
 - `SESSION_SECRET`: Render tu generate
 
-Ban free khong co Persistent Disk, nen SQLite database va anh upload co the mat khi Render redeploy/restart. De dung production, chuyen `render.yaml` sang paid plan co Persistent Disk va dat `DATABASE_URL`/`UPLOAD_DIR` ve `/var/data`.
+Database được lưu persistent trong Neon. Render free vẫn không có filesystem bền vững, nên ảnh upload trong `/tmp/logstudy-uploads` vẫn có thể mất sau restart/redeploy. Muốn ảnh cũng persistent thì chuyển upload sang object storage ở task sau.
 
 ## Auto deploy tu GitHub len Render
 

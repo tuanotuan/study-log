@@ -15,7 +15,6 @@ Important paths:
 - `lib/i18n.ts` - locale helpers and Vietnamese/English copy dictionary.
 - `lib/` - Prisma, session, date helpers, stats, upload path helpers, email helper.
 - `prisma/schema.prisma` - database schema.
-- `scripts/ensure-db.mjs` - idempotent DB bootstrap used locally and on Render.
 - `render.yaml` - Render Blueprint.
 - `.github/workflows/render-deploy.yml` - GitHub Action that triggers Render Deploy Hook.
 - `docs/` - project handoff documentation.
@@ -151,10 +150,13 @@ If email delivery is missing or fails:
 
 ## Database Bootstrap
 
-`scripts/ensure-db.mjs` is intentionally used in production start command:
+Prisma migrations are intentionally used in production start command:
 
 ```bash
 npm run db:ensure && npm run start
 ```
 
-It creates missing tables/indexes and adds `emailVerifiedAt`, `username`, or profile columns if missing.
+`npm run db:ensure` runs `prisma migrate deploy` against Postgres. The Prisma datasource uses:
+
+- `DATABASE_URL` for runtime queries.
+- `DIRECT_URL` for schema operations and migrations.

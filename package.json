@@ -10,8 +10,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
-    "db:ensure": "node scripts/ensure-db.mjs",
-    "db:apply": "prisma db execute --file prisma/migrations/20260704143000_init/migration.sql --schema prisma/schema.prisma",
+    "db:ensure": "prisma migrate deploy",
     "prisma:studio": "prisma studio"
   },
   "engines": {

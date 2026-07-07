@@ -10,7 +10,9 @@ services:
       - key: NODE_VERSION
         value: 22.12.0
       - key: DATABASE_URL
-        value: file:/tmp/logstudy.db
+        sync: false
+      - key: DIRECT_URL
+        sync: false
       - key: UPLOAD_DIR
         value: /tmp/logstudy-uploads
       - key: APP_URL

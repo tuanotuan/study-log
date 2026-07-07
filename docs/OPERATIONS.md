@@ -34,11 +34,14 @@ npm run prisma:generate
 npm run prisma:studio
 ```
 
+`db:ensure` runs `prisma migrate deploy`, so it needs a reachable Postgres database URL.
+
 ## Environment Variables
 
 Required:
 
 - `DATABASE_URL`
+- `DIRECT_URL`
 - `SESSION_SECRET`
 - `UPLOAD_DIR`
 - `APP_URL`
@@ -75,7 +78,8 @@ Render Blueprint:
 Configured Render env in Blueprint:
 
 - `NODE_VERSION=22.12.0`
-- `DATABASE_URL=file:/tmp/logstudy.db`
+- `DATABASE_URL`: set manually to Neon pooled Postgres URL.
+- `DIRECT_URL`: set manually to Neon direct Postgres URL.
 - `UPLOAD_DIR=/tmp/logstudy-uploads`
 - `APP_URL=https://logstudy.onrender.com`
 - `AUTH_CODE_DEBUG=true`
@@ -84,8 +88,9 @@ Configured Render env in Blueprint:
 Free plan caveat:
 
 - `/tmp` is not durable.
-- Database and uploads can disappear.
-- Use paid Persistent Disk for production.
+- Uploaded images can disappear after restart/redeploy.
+- Database rows are persistent because they live in external Neon Postgres.
+- Move uploads to object storage later if image persistence is required.
 
 ## Auto Deploy
 
@@ -97,6 +102,18 @@ Two mechanisms exist:
 GitHub fallback requires repository secret:
 
 - `RENDER_DEPLOY_HOOK_URL`
+
+## How To Set Up Free Persistent DB
+
+Recommended provider: Neon free Postgres.
+
+1. Create a Neon project.
+2. Copy the pooled connection string and set it as `DATABASE_URL` in Render.
+3. Copy the direct connection string and set it as `DIRECT_URL` in Render.
+4. Save, rebuild, and deploy.
+5. Render start runs `prisma migrate deploy` through `npm run db:ensure`.
+
+Neon recommends a pooled URL for app runtime and a direct URL for Prisma CLI migrations.
 
 ## Git Workflow
 

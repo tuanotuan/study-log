@@ -30,13 +30,14 @@ Live app:
 - Next.js 16 App Router
 - TypeScript
 - Tailwind CSS
-- SQLite
+- Postgres
 - Prisma
 - bcrypt
 - session cookie signed with HMAC
 - bilingual UI dictionary and locale cookie
 - Resend HTTP email API support for Render-friendly delivery
 - Render free web service for demo deploy
+- Neon free Postgres for persistent database storage
 
 ## Current Important Behavior
 
@@ -81,17 +82,17 @@ Email:
 Deploy:
 
 - Render free plan is configured in `render.yaml`.
-- Free plan stores SQLite and uploads in `/tmp`, so data can be lost on restart/redeploy.
-- Production persistence requires a paid Render plan with Persistent Disk mounted at `/var/data`.
+- Database persistence uses external Postgres through Neon, configured with `DATABASE_URL` and `DIRECT_URL`.
+- Render free still stores uploads in `/tmp`, so uploaded images can be lost on restart/redeploy.
 - Auto-deploy is configured through both Render Blueprint `autoDeployTrigger: commit` and a GitHub Actions deploy-hook workflow.
 
 ## Known Caveats
 
 - Render free instances can sleep.
-- Render free filesystem is not persistent. SQLite data and uploaded images can disappear after restart/redeploy.
+- Render free filesystem is not persistent. Uploaded images can disappear after restart/redeploy until object storage is added.
+- Neon free Postgres keeps database rows persistent across Render deploys/restarts.
 - Real email delivery requires `RESEND_API_KEY` and `RESEND_FROM`.
 - If deploy auto-trigger does not run, check GitHub secret `RENDER_DEPLOY_HOOK_URL` and Render service Events.
-- Local Windows sometimes fails with Prisma schema engine for `migrate dev`; `npm run db:ensure` is the reliable fallback for the current app.
 
 ## Current Commit Workflow
 
