@@ -1,8 +1,13 @@
 import "server-only";
 
 import nodemailer from "nodemailer";
+import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
 type AuthEmailKind = "verify" | "reset";
+type SMTPTransportOptionsWithFamily = SMTPTransport.Options & {
+  family: 4;
+};
+
 const SMTP_TIMEOUT_MS = 10_000;
 
 function getAppUrl() {
@@ -25,15 +30,18 @@ function getTransport() {
     return null;
   }
 
-  return nodemailer.createTransport({
+  const options: SMTPTransportOptionsWithFamily = {
     host,
     port,
     secure: process.env.SMTP_SECURE === "true" || port === 465,
     auth: user && pass ? { user, pass } : undefined,
+    family: 4,
     connectionTimeout: SMTP_TIMEOUT_MS,
     greetingTimeout: SMTP_TIMEOUT_MS,
     socketTimeout: SMTP_TIMEOUT_MS
-  });
+  };
+
+  return nodemailer.createTransport(options);
 }
 
 function getEmailCopy(kind: AuthEmailKind, code: string, email: string) {

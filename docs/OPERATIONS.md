@@ -138,6 +138,7 @@ If SMTP is configured:
 4. If delivery fails or SMTP does not answer within 10 seconds, the app falls back to logs and possibly visible debug code.
 5. Spaces pasted into `SMTP_PASS` are stripped by the app so Google App Passwords can be pasted as shown.
 6. Check Render Logs for `[LogStudy email config missing]` if env vars are absent, or `[LogStudy email error]` if Gmail rejects the SMTP attempt.
+7. Gmail SMTP is forced to IPv4 in code to avoid Render `ENETUNREACH` errors against IPv6 Gmail addresses.
 
 ## How To Test Username Login
 

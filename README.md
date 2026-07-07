@@ -121,7 +121,7 @@ SMTP_FROM="LogStudy <your-gmail@gmail.com>"
 SMTP_SECURE=true
 ```
 
-Voi Gmail, `SMTP_PASS` phai la Google App Password, khong phai mat khau Gmail thuong. App tu bo khoang trang trong `SMTP_PASS` de co the paste Google App Password theo dinh dang Google hien thi. Neu chua cau hinh SMTP hoac SMTP khong tra loi trong 10 giay, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Log cung co `[LogStudy email config missing]` neu thieu env SMTP, hoac `[LogStudy email error]` neu Gmail tu choi/ket noi loi. Mac dinh app hien test code ngay tren trang verify/reset de demo nhanh; dat `AUTH_CODE_DEBUG=false` de tat.
+Voi Gmail, `SMTP_PASS` phai la Google App Password, khong phai mat khau Gmail thuong. App tu bo khoang trang trong `SMTP_PASS` de co the paste Google App Password theo dinh dang Google hien thi. SMTP bi ep dung IPv4 de tranh loi Render khong di duoc IPv6 toi Gmail. Neu chua cau hinh SMTP hoac SMTP khong tra loi trong 10 giay, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Log cung co `[LogStudy email config missing]` neu thieu env SMTP, hoac `[LogStudy email error]` neu Gmail tu choi/ket noi loi. Mac dinh app hien test code ngay tren trang verify/reset de demo nhanh; dat `AUTH_CODE_DEBUG=false` de tat.
 
 ## Scripts
 
