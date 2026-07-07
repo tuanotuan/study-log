@@ -68,3 +68,4 @@ Last updated: 2026-07-07
 - Added 10-second Nodemailer connection/greeting/socket timeouts.
 - Stripped whitespace from `SMTP_PASS` to tolerate copied Gmail App Password formatting.
 - Auth code flows now fall back faster instead of making register/reset submissions appear stuck.
+- Added clearer SMTP diagnostic logs and a more accurate fallback test-code message.

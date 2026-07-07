@@ -102,7 +102,7 @@ export const copy = {
       verifySent: "Đã gửi mã xác thực.",
       verify: "Xác thực",
       resendCode: "Gửi lại mã",
-      testCode: "Email chưa được cấu hình. Mã test:",
+      testCode: "Chưa gửi được email. Mã test:",
       emailPlaceholder: "Email",
       alreadyHaveAccount: "Đã có tài khoản?",
       haveCode: "Đã có mã?"
@@ -231,7 +231,7 @@ export const copy = {
       verifySent: "Verification code sent.",
       verify: "Verify",
       resendCode: "Resend code",
-      testCode: "Email is not configured yet. Test code:",
+      testCode: "Email delivery is not working yet. Test code:",
       emailPlaceholder: "Email",
       alreadyHaveAccount: "Already have an account?",
       haveCode: "Have a code?"

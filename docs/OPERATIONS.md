@@ -137,6 +137,7 @@ If SMTP is configured:
 3. Trigger the flow and check the mailbox.
 4. If delivery fails or SMTP does not answer within 10 seconds, the app falls back to logs and possibly visible debug code.
 5. Spaces pasted into `SMTP_PASS` are stripped by the app so Google App Passwords can be pasted as shown.
+6. Check Render Logs for `[LogStudy email config missing]` if env vars are absent, or `[LogStudy email error]` if Gmail rejects the SMTP attempt.
 
 ## How To Test Username Login
 

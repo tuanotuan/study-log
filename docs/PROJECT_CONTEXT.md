@@ -65,6 +65,8 @@ Email:
 - SMTP is optional.
 - Gmail SMTP is supported through env vars.
 - If email sending is not configured or fails, the code is logged with prefix `[LogStudy email fallback]`.
+- Missing SMTP env is logged as `[LogStudy email config missing]`.
+- SMTP/Gmail failures are logged as `[LogStudy email error]` with sanitized diagnostic fields.
 - By default, fallback codes are also shown on verify/reset pages for demo use.
 - Set `AUTH_CODE_DEBUG=false` to hide fallback codes from pages.
 - SMTP sends use a 10-second timeout, then fall back instead of leaving auth forms waiting indefinitely.

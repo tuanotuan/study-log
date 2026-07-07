@@ -16,6 +16,12 @@ function getTransport() {
   const host = process.env.SMTP_HOST || (user && pass ? "smtp.gmail.com" : "");
 
   if (!host || !user || !pass) {
+    console.warn("[LogStudy email config missing]", {
+      hasHost: Boolean(host),
+      hasUser: Boolean(user),
+      hasPass: Boolean(pass),
+      port
+    });
     return null;
   }
 
@@ -78,7 +84,20 @@ export async function sendAuthCodeEmail(email: string, code: string, kind: AuthE
     });
     return true;
   } catch (error) {
-    console.error("[LogStudy email error]", error);
+    const smtpError = error as {
+      code?: unknown;
+      command?: unknown;
+      response?: unknown;
+      responseCode?: unknown;
+    };
+
+    console.error("[LogStudy email error]", {
+      code: smtpError.code,
+      command: smtpError.command,
+      responseCode: smtpError.responseCode,
+      response: smtpError.response,
+      message: error instanceof Error ? error.message : String(error)
+    });
     console.log(`[LogStudy email fallback] ${kind} code for ${email}: ${code}`);
     return false;
   }
