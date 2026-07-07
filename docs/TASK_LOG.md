@@ -69,4 +69,4 @@ Last updated: 2026-07-07
 - Stripped whitespace from `SMTP_PASS` to tolerate copied Gmail App Password formatting.
 - Auth code flows now fall back faster instead of making register/reset submissions appear stuck.
 - Added clearer SMTP diagnostic logs and a more accurate fallback test-code message.
-- Forced Gmail SMTP connections to IPv4 after Render logged `ENETUNREACH` for Gmail IPv6.
+- Forced Gmail SMTP connections through pre-resolved IPv4 after Render logged `ENETUNREACH` for Gmail IPv6.

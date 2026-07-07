@@ -1,12 +1,11 @@
 import "server-only";
 
+import { resolve4 } from "dns/promises";
+import { isIP } from "net";
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
 type AuthEmailKind = "verify" | "reset";
-type SMTPTransportOptionsWithFamily = SMTPTransport.Options & {
-  family: 4;
-};
 
 const SMTP_TIMEOUT_MS = 10_000;
 
@@ -14,7 +13,22 @@ function getAppUrl() {
   return process.env.APP_URL || "https://logstudy.onrender.com";
 }
 
-function getTransport() {
+async function resolveSmtpHost(host: string) {
+  if (isIP(host)) {
+    return { connectHost: host, servername: undefined };
+  }
+
+  const addresses = await resolve4(host);
+  const connectHost = addresses[0];
+
+  if (!connectHost) {
+    throw new Error(`No IPv4 address found for ${host}`);
+  }
+
+  return { connectHost, servername: host };
+}
+
+async function getTransport() {
   const port = Number(process.env.SMTP_PORT || 587);
   const user = process.env.SMTP_USER?.trim();
   const pass = process.env.SMTP_PASS?.replace(/\s/g, "");
@@ -30,12 +44,14 @@ function getTransport() {
     return null;
   }
 
-  const options: SMTPTransportOptionsWithFamily = {
-    host,
+  const { connectHost, servername } = await resolveSmtpHost(host);
+
+  const options: SMTPTransport.Options = {
+    host: connectHost,
     port,
     secure: process.env.SMTP_SECURE === "true" || port === 465,
     auth: user && pass ? { user, pass } : undefined,
-    family: 4,
+    tls: servername ? { servername } : undefined,
     connectionTimeout: SMTP_TIMEOUT_MS,
     greetingTimeout: SMTP_TIMEOUT_MS,
     socketTimeout: SMTP_TIMEOUT_MS
@@ -75,8 +91,16 @@ function getEmailCopy(kind: AuthEmailKind, code: string, email: string) {
 }
 
 export async function sendAuthCodeEmail(email: string, code: string, kind: AuthEmailKind) {
-  const transport = getTransport();
   const copy = getEmailCopy(kind, code, email);
+  let transport: nodemailer.Transporter | null = null;
+
+  try {
+    transport = await getTransport();
+  } catch (error) {
+    console.error("[LogStudy email DNS error]", {
+      message: error instanceof Error ? error.message : String(error)
+    });
+  }
 
   if (!transport) {
     console.log(`[LogStudy email fallback] ${kind} code for ${email}: ${code}`);

@@ -70,7 +70,7 @@ Email:
 - By default, fallback codes are also shown on verify/reset pages for demo use.
 - Set `AUTH_CODE_DEBUG=false` to hide fallback codes from pages.
 - SMTP sends use a 10-second timeout, then fall back instead of leaving auth forms waiting indefinitely.
-- SMTP is forced to IPv4 because Render can fail Gmail IPv6 connections with `ENETUNREACH`.
+- SMTP resolves an IPv4 address before connecting and keeps the Gmail TLS server name because Render can fail Gmail IPv6 connections with `ENETUNREACH`.
 
 Deploy:
 
