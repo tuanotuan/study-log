@@ -1,6 +1,6 @@
 # Task Log
 
-Last updated: 2026-07-06
+Last updated: 2026-07-07
 
 ## 2026-07-04 - Initial App
 
@@ -62,3 +62,9 @@ Last updated: 2026-07-06
 - Login now accepts either email or username.
 - Dashboard header shows `@username` when available.
 - Updated DB bootstrap to add the username column/index on existing SQLite databases.
+
+## 2026-07-07 - SMTP Timeout Fallback
+
+- Added 10-second Nodemailer connection/greeting/socket timeouts.
+- Stripped whitespace from `SMTP_PASS` to tolerate copied Gmail App Password formatting.
+- Auth code flows now fall back faster instead of making register/reset submissions appear stuck.

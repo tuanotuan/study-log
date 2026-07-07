@@ -1,6 +1,6 @@
 # Operations
 
-Last updated: 2026-07-06
+Last updated: 2026-07-07
 
 ## Local Development
 
@@ -135,7 +135,8 @@ If SMTP is configured:
 1. Ensure Gmail App Password is used, not normal Gmail password.
 2. Set `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM` in Render.
 3. Trigger the flow and check the mailbox.
-4. If delivery fails, the app falls back to logs and possibly visible debug code.
+4. If delivery fails or SMTP does not answer within 10 seconds, the app falls back to logs and possibly visible debug code.
+5. Spaces pasted into `SMTP_PASS` are stripped by the app so Google App Passwords can be pasted as shown.
 
 ## How To Test Username Login
 

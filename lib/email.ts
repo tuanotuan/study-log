@@ -3,6 +3,7 @@ import "server-only";
 import nodemailer from "nodemailer";
 
 type AuthEmailKind = "verify" | "reset";
+const SMTP_TIMEOUT_MS = 10_000;
 
 function getAppUrl() {
   return process.env.APP_URL || "https://logstudy.onrender.com";
@@ -10,8 +11,8 @@ function getAppUrl() {
 
 function getTransport() {
   const port = Number(process.env.SMTP_PORT || 587);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  const user = process.env.SMTP_USER?.trim();
+  const pass = process.env.SMTP_PASS?.replace(/\s/g, "");
   const host = process.env.SMTP_HOST || (user && pass ? "smtp.gmail.com" : "");
 
   if (!host || !user || !pass) {
@@ -22,7 +23,10 @@ function getTransport() {
     host,
     port,
     secure: process.env.SMTP_SECURE === "true" || port === 465,
-    auth: user && pass ? { user, pass } : undefined
+    auth: user && pass ? { user, pass } : undefined,
+    connectionTimeout: SMTP_TIMEOUT_MS,
+    greetingTimeout: SMTP_TIMEOUT_MS,
+    socketTimeout: SMTP_TIMEOUT_MS
   });
 }
 
