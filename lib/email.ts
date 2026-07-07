@@ -8,6 +8,7 @@ import type SMTPTransport from "nodemailer/lib/smtp-transport";
 type AuthEmailKind = "verify" | "reset";
 
 const SMTP_TIMEOUT_MS = 10_000;
+const RESEND_TIMEOUT_MS = 10_000;
 
 function getAppUrl() {
   return process.env.APP_URL || "https://logstudy.onrender.com";
@@ -98,8 +99,78 @@ function getEmailCopy(kind: AuthEmailKind, code: string, email: string) {
   };
 }
 
+function getFromAddress() {
+  return (
+    process.env.RESEND_FROM ||
+    process.env.SMTP_FROM ||
+    process.env.SMTP_USER ||
+    "LogStudy <onboarding@resend.dev>"
+  );
+}
+
+async function sendResendEmail(email: string, copy: { subject: string; text: string }) {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+
+  if (!apiKey) {
+    return null;
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), RESEND_TIMEOUT_MS);
+
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "User-Agent": "logstudy/1.0"
+      },
+      body: JSON.stringify({
+        from: getFromAddress(),
+        to: [email],
+        subject: copy.subject,
+        text: copy.text
+      }),
+      signal: controller.signal
+    });
+    const body = await response.text();
+
+    if (!response.ok) {
+      console.error("[LogStudy resend email error]", {
+        status: response.status,
+        body: body.slice(0, 500)
+      });
+      return false;
+    }
+
+    console.info("[LogStudy resend email sent]", {
+      status: response.status,
+      body: body.slice(0, 200)
+    });
+    return true;
+  } catch (error) {
+    console.error("[LogStudy resend email error]", {
+      message: error instanceof Error ? error.message : String(error)
+    });
+    return false;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export async function sendAuthCodeEmail(email: string, code: string, kind: AuthEmailKind) {
   const copy = getEmailCopy(kind, code, email);
+  const resendSent = await sendResendEmail(email, copy);
+
+  if (resendSent !== null) {
+    if (!resendSent) {
+      console.log(`[LogStudy email fallback] ${kind} code for ${email}: ${code}`);
+    }
+
+    return resendSent;
+  }
+
   let transport: nodemailer.Transporter | null = null;
 
   try {

@@ -17,6 +17,10 @@ services:
         value: https://logstudy.onrender.com
       - key: AUTH_CODE_DEBUG
         value: "true"
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
       - key: SMTP_HOST
         value: smtp.gmail.com
       - key: SMTP_PORT

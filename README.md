@@ -41,7 +41,11 @@ APP_URL="http://localhost:3000"
 AUTH_CODE_DEBUG="true"
 
 # Optional SMTP. If omitted, auth codes are printed in server logs.
-# Gmail requires a Google App Password, not your normal Gmail password.
+# Recommended on Render: Resend uses HTTPS and avoids blocked SMTP ports.
+RESEND_API_KEY=""
+RESEND_FROM="LogStudy <onboarding@resend.dev>"
+
+# SMTP fallback. Gmail requires a Google App Password, not your normal Gmail password.
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT="587"
 SMTP_USER=""
@@ -110,7 +114,14 @@ Tu do moi commit push len `main` se tu trigger Render deploy.
 
 Register yeu cau username rieng, email va password; user moi can verify email bang ma 6 so tai `/verify-email`. Login chap nhan email hoac username, nhung van chan user chua verified va gui lai ma moi. Forgot password van dung email tai `/forgot-password`, sau do reset tai `/reset-password`.
 
-De gui email that tren Render, them cac env vars trong service:
+De gui email that tren Render, cach khuyen dung la Resend vi no gui qua HTTPS, tranh loi timeout SMTP:
+
+```env
+RESEND_API_KEY=re_xxxxxxxxx
+RESEND_FROM=LogStudy <onboarding@resend.dev>
+```
+
+Neu khong co `RESEND_API_KEY`, app se fallback sang SMTP:
 
 ```env
 SMTP_HOST=smtp.gmail.com
@@ -121,7 +132,7 @@ SMTP_FROM="LogStudy <your-gmail@gmail.com>"
 SMTP_SECURE=false
 ```
 
-Voi Gmail, `SMTP_PASS` phai la Google App Password, khong phai mat khau Gmail thuong. App tu bo khoang trang trong `SMTP_PASS` de co the paste Google App Password theo dinh dang Google hien thi. SMTP tu resolve IPv4 va dung TLS server name cua Gmail de tranh loi Render khong di duoc IPv6 toi Gmail. Neu chua cau hinh SMTP hoac SMTP khong tra loi trong 10 giay, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Log cung co `[LogStudy email config missing]` neu thieu env SMTP, `[LogStudy email DNS error]` neu resolve IPv4 loi, hoac `[LogStudy email error]` neu Gmail tu choi/ket noi loi. Mac dinh app hien test code ngay tren trang verify/reset de demo nhanh; dat `AUTH_CODE_DEBUG=false` de tat.
+Voi Resend, can tao API key va dat `RESEND_FROM`; de production nen verify domain rieng. Voi Gmail SMTP, `SMTP_PASS` phai la Google App Password, khong phai mat khau Gmail thuong. App tu bo khoang trang trong `SMTP_PASS` de co the paste Google App Password theo dinh dang Google hien thi. SMTP tu resolve IPv4 va dung TLS server name cua Gmail de tranh loi Render khong di duoc IPv6 toi Gmail, nhung Render van co the timeout outbound SMTP. Neu chua cau hinh email provider hoac provider loi, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Log co `[LogStudy resend email error]`, `[LogStudy email config missing]`, `[LogStudy email DNS error]`, hoac `[LogStudy email error]` tuy provider loi. Mac dinh app hien test code ngay tren trang verify/reset de demo nhanh; dat `AUTH_CODE_DEBUG=false` de tat.
 
 ## Scripts
 

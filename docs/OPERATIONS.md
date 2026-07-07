@@ -56,6 +56,8 @@ Demo/debug:
 
 Email:
 
+- `RESEND_API_KEY`
+- `RESEND_FROM`
 - `SMTP_HOST`
 - `SMTP_PORT`
 - `SMTP_USER`
@@ -83,6 +85,7 @@ Configured Render env in Blueprint:
 - `UPLOAD_DIR=/tmp/logstudy-uploads`
 - `APP_URL=https://logstudy.onrender.com`
 - `AUTH_CODE_DEBUG=true`
+- Optional Resend secrets for HTTP email delivery.
 - Gmail SMTP defaults to port 587 with STARTTLS and secrets for user/pass/from.
 
 Free plan caveat:
@@ -123,14 +126,27 @@ For docs-only changes, lint/build are optional, but still check `git status` and
 
 ## How To Test Auth Codes On Render
 
-If SMTP is not configured:
+Recommended Render email setup:
+
+1. Create a Resend API key.
+2. Set `RESEND_API_KEY` in Render.
+3. Set `RESEND_FROM`, for example `LogStudy <onboarding@resend.dev>` for quick testing or a verified-domain sender for production.
+4. Save, rebuild, and deploy.
+
+If no email provider is configured:
 
 1. Go to `/register` or `/forgot-password`.
 2. Submit an existing email for forgot password, or a new email for register.
 3. The next page should show a yellow message with `Test code: <6 digits>`.
 4. Use that code in `/verify-email` or `/reset-password`.
 
-If SMTP is configured:
+If Resend is configured:
+
+1. Trigger the flow and check the mailbox.
+2. Check Render Logs for `[LogStudy resend email sent]`.
+3. If it fails, check `[LogStudy resend email error]`; the visible fallback code can still be used for testing.
+
+If SMTP is configured instead:
 
 1. Ensure Gmail App Password is used, not normal Gmail password.
 2. Set `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM` in Render.
@@ -141,6 +157,7 @@ If SMTP is configured:
 7. Check Render Logs for `[LogStudy email config missing]` if env vars are absent, `[LogStudy email DNS error]` if IPv4 resolution fails, or `[LogStudy email error]` if Gmail rejects the SMTP attempt.
 8. Gmail SMTP resolves IPv4 before connecting to avoid Render `ENETUNREACH` errors against IPv6 Gmail addresses.
 9. Prefer `SMTP_PORT=587` and `SMTP_SECURE=false`; the app requires STARTTLS on 587. Port 465 can time out from Render.
+10. If 587 also times out on Render, use Resend instead of SMTP.
 
 ## How To Test Username Login
 

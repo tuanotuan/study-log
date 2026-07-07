@@ -34,6 +34,7 @@ Live app:
 - session cookie signed with HMAC
 - bilingual UI dictionary and locale cookie
 - Nodemailer for SMTP email
+- Resend HTTP email API support for Render-friendly delivery
 - Render free web service for demo deploy
 
 ## Current Important Behavior
@@ -63,8 +64,10 @@ Authentication:
 Email:
 
 - SMTP is optional.
+- Resend is preferred when `RESEND_API_KEY` is configured; it sends through HTTPS and avoids Render SMTP timeouts.
 - Gmail SMTP is supported through env vars.
 - If email sending is not configured or fails, the code is logged with prefix `[LogStudy email fallback]`.
+- Resend failures are logged as `[LogStudy resend email error]`.
 - Missing SMTP env is logged as `[LogStudy email config missing]`.
 - SMTP/Gmail failures are logged as `[LogStudy email error]` with sanitized diagnostic fields.
 - By default, fallback codes are also shown on verify/reset pages for demo use.

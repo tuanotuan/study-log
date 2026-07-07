@@ -117,6 +117,17 @@ File:
 
 - `lib/email.ts`
 
+Provider order:
+
+- Resend HTTP API is used first when `RESEND_API_KEY` is configured.
+- SMTP is used only when Resend is not configured.
+- Failed provider sends fall back to logs and optional visible debug code.
+
+Resend env:
+
+- `RESEND_API_KEY`
+- `RESEND_FROM`
+
 SMTP env:
 
 - `SMTP_HOST`
@@ -126,7 +137,7 @@ SMTP env:
 - `SMTP_FROM`
 - `SMTP_SECURE`
 
-If SMTP is missing or fails:
+If email delivery is missing or fails:
 
 - Code is logged in server output.
 - If `AUTH_CODE_DEBUG` is not `false`, code is included in the redirect query and shown on verify/reset pages.
