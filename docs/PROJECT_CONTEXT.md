@@ -71,6 +71,7 @@ Email:
 - Set `AUTH_CODE_DEBUG=false` to hide fallback codes from pages.
 - SMTP sends use a 10-second timeout, then fall back instead of leaving auth forms waiting indefinitely.
 - SMTP resolves an IPv4 address before connecting and keeps the Gmail TLS server name because Render can fail Gmail IPv6 connections with `ENETUNREACH`.
+- Gmail SMTP defaults to port 587 with STARTTLS because port 465 can time out from Render.
 
 Deploy:
 

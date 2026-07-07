@@ -58,6 +58,7 @@ async function getTransport() {
     port,
     secure: process.env.SMTP_SECURE === "true" || port === 465,
     auth: user && pass ? { user, pass } : undefined,
+    requireTLS: port === 587,
     tls: servername ? { servername } : undefined,
     connectionTimeout: SMTP_TIMEOUT_MS,
     greetingTimeout: SMTP_TIMEOUT_MS,

@@ -71,3 +71,4 @@ Last updated: 2026-07-07
 - Added clearer SMTP diagnostic logs and a more accurate fallback test-code message.
 - Forced Gmail SMTP connections through pre-resolved IPv4 after Render logged `ENETUNREACH` for Gmail IPv6.
 - Added SMTP transport logs to confirm the deployed app is using an IPv4 `connectHost`.
+- Switched Gmail SMTP defaults from implicit TLS port 465 to STARTTLS port 587 after Render timed out connecting to 465.

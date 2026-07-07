@@ -43,11 +43,11 @@ AUTH_CODE_DEBUG="true"
 # Optional SMTP. If omitted, auth codes are printed in server logs.
 # Gmail requires a Google App Password, not your normal Gmail password.
 SMTP_HOST="smtp.gmail.com"
-SMTP_PORT="465"
+SMTP_PORT="587"
 SMTP_USER=""
 SMTP_PASS=""
 SMTP_FROM=""
-SMTP_SECURE="true"
+SMTP_SECURE="false"
 ```
 
 ## Migrate database
@@ -114,11 +114,11 @@ De gui email that tren Render, them cac env vars trong service:
 
 ```env
 SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
+SMTP_PORT=587
 SMTP_USER=your-gmail@gmail.com
 SMTP_PASS=your-google-app-password
 SMTP_FROM="LogStudy <your-gmail@gmail.com>"
-SMTP_SECURE=true
+SMTP_SECURE=false
 ```
 
 Voi Gmail, `SMTP_PASS` phai la Google App Password, khong phai mat khau Gmail thuong. App tu bo khoang trang trong `SMTP_PASS` de co the paste Google App Password theo dinh dang Google hien thi. SMTP tu resolve IPv4 va dung TLS server name cua Gmail de tranh loi Render khong di duoc IPv6 toi Gmail. Neu chua cau hinh SMTP hoac SMTP khong tra loi trong 10 giay, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Log cung co `[LogStudy email config missing]` neu thieu env SMTP, `[LogStudy email DNS error]` neu resolve IPv4 loi, hoac `[LogStudy email error]` neu Gmail tu choi/ket noi loi. Mac dinh app hien test code ngay tren trang verify/reset de demo nhanh; dat `AUTH_CODE_DEBUG=false` de tat.

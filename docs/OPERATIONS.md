@@ -83,7 +83,7 @@ Configured Render env in Blueprint:
 - `UPLOAD_DIR=/tmp/logstudy-uploads`
 - `APP_URL=https://logstudy.onrender.com`
 - `AUTH_CODE_DEBUG=true`
-- Gmail SMTP defaults with secrets for user/pass/from.
+- Gmail SMTP defaults to port 587 with STARTTLS and secrets for user/pass/from.
 
 Free plan caveat:
 
@@ -140,6 +140,7 @@ If SMTP is configured:
 6. Check Render Logs for `[LogStudy email transport]` to confirm the app resolved SMTP to an IPv4 `connectHost`.
 7. Check Render Logs for `[LogStudy email config missing]` if env vars are absent, `[LogStudy email DNS error]` if IPv4 resolution fails, or `[LogStudy email error]` if Gmail rejects the SMTP attempt.
 8. Gmail SMTP resolves IPv4 before connecting to avoid Render `ENETUNREACH` errors against IPv6 Gmail addresses.
+9. Prefer `SMTP_PORT=587` and `SMTP_SECURE=false`; the app requires STARTTLS on 587. Port 465 can time out from Render.
 
 ## How To Test Username Login
 
