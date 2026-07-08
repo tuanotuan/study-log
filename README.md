@@ -162,3 +162,5 @@ npm run prisma:studio
 ## Ghi chu upload anh
 
 Local mac dinh luu anh trong `public/uploads`. Tren Render, nen cau hinh Cloudinary de anh persistent; route `/uploads/:filename` chi phuc vu fallback local.
+
+Form upload dung Next Server Actions voi body limit 8MB trong `next.config.mjs`; app van validate anh commit toi da 5MB va avatar toi da 3MB.

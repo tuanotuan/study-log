@@ -1,6 +1,6 @@
 # Task Log
 
-Last updated: 2026-07-07
+Last updated: 2026-07-08
 
 ## 2026-07-04 - Initial App
 
@@ -97,3 +97,8 @@ Last updated: 2026-07-07
 - Added Cloudinary env vars to Render Blueprint, `.env.example`, README, and handoff docs.
 - Allowed `res.cloudinary.com` in Next image config.
 - Added Cloudinary upload diagnostics and support for prioritized `CLOUDINARY_URL`.
+
+## 2026-07-08 - Upload Body Limit Fix
+
+- Increased Next Server Action body limit to 8MB so profile avatar and study commit image forms can submit images above Next's 1MB default.
+- Documented that app validation remains 5MB for commit images and 3MB for avatars.

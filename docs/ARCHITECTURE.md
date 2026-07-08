@@ -1,6 +1,6 @@
 # Architecture
 
-Last updated: 2026-07-07
+Last updated: 2026-07-08
 
 ## App Structure
 
@@ -122,6 +122,7 @@ Provider order:
 
 - Cloudinary is used when `CLOUDINARY_URL` or `CLOUDINARY_CLOUD_NAME`/`CLOUDINARY_API_KEY`/`CLOUDINARY_API_SECRET` are configured.
 - Local `UPLOAD_DIR` is used only as a fallback for local dev or missing Cloudinary env.
+- Next Server Actions use `experimental.serverActions.bodySizeLimit = "8mb"` in `next.config.mjs` so multipart image forms can reach app-level validation.
 
 Cloudinary env:
 

@@ -1,6 +1,6 @@
 # Operations
 
-Last updated: 2026-07-07
+Last updated: 2026-07-08
 
 ## Local Development
 
@@ -134,6 +134,11 @@ Recommended provider: Cloudinary free plan.
 5. Save, rebuild, and deploy.
 
 When configured, new avatars and study commit images are stored on Cloudinary and DB rows store HTTPS image URLs. Existing local `/uploads/...` images are not migrated automatically.
+
+Upload limit note:
+
+- Next Server Actions are configured with an 8MB body limit in `next.config.mjs`.
+- The app still validates commit images at 5MB max and avatars at 3MB max.
 
 ## Git Workflow
 
