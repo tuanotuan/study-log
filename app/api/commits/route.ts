@@ -5,7 +5,7 @@ import { parseStudyDate } from "@/lib/dates";
 import { getCopy, getLocale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { uploadImageFile } from "@/lib/uploads";
+import { isCloudinaryPermissionError, uploadImageFile } from "@/lib/uploads";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
@@ -102,7 +102,10 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("[LogStudy commit upload error]", error);
-    return redirectWithError(request, t.errors.uploadFailed);
+    return redirectWithError(
+      request,
+      isCloudinaryPermissionError(error) ? t.errors.cloudinaryPermission : t.errors.uploadFailed
+    );
   }
 
   try {

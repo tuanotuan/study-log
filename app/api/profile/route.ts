@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCopy, getLocale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { deleteUploadedImage, uploadImageFile } from "@/lib/uploads";
+import { deleteUploadedImage, isCloudinaryPermissionError, uploadImageFile } from "@/lib/uploads";
 
 const MAX_AVATAR_SIZE = 3 * 1024 * 1024;
 const ALLOWED_AVATAR_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
@@ -100,7 +100,10 @@ export async function POST(request: NextRequest) {
       });
     } catch (error) {
       console.error("[LogStudy profile upload error]", error);
-      return redirectWithError(request, t.errors.uploadFailed);
+      return redirectWithError(
+        request,
+        isCloudinaryPermissionError(error) ? t.errors.cloudinaryPermission : t.errors.uploadFailed
+      );
     }
 
     previousAvatarUrl = user.avatarUrl;

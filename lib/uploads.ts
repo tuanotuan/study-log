@@ -194,6 +194,11 @@ export async function uploadImageFile(options: UploadImageOptions) {
   return cloudinaryUrl ?? uploadToLocal(options);
 }
 
+export function isCloudinaryPermissionError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  return /missing permissions|Request forbidden|actions=\["create"\]/i.test(message);
+}
+
 function getCloudinaryPublicId(imageUrl: string) {
   const config = getCloudinaryConfig();
 

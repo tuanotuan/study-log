@@ -96,6 +96,7 @@ Deploy:
 - Render free filesystem is not persistent. Uploads only disappear if Cloudinary is not configured and the app falls back to local `UPLOAD_DIR`.
 - Neon free Postgres keeps database rows persistent across Render deploys/restarts.
 - Cloudinary keeps uploaded images persistent across Render deploys/restarts.
+- If Cloudinary returns `403` with `missing permissions (actions=["create"])`, the Render API key lacks upload/create permission and must be replaced or granted an upload-capable role in Cloudinary.
 - Real email delivery requires `RESEND_API_KEY` and `RESEND_FROM`.
 - Persistent image delivery requires `CLOUDINARY_URL` or separate `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`.
 - If deploy auto-trigger does not run, check GitHub secret `RENDER_DEPLOY_HOOK_URL` and Render service Events.

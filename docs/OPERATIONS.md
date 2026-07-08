@@ -135,6 +135,12 @@ Recommended provider: Cloudinary free plan.
 
 When configured, new avatars and study commit images are stored on Cloudinary and DB rows store HTTPS image URLs. Existing local `/uploads/...` images are not migrated automatically.
 
+Cloudinary permission troubleshooting:
+
+- `status: 403` with `missing permissions (actions=["create"])` means the product environment API key used by Render cannot create/upload assets.
+- Fix it in Cloudinary by assigning that API key a role with Upload API asset creation permission, or generate a new product environment API key that can upload assets and replace `CLOUDINARY_URL`/`CLOUDINARY_API_KEY`/`CLOUDINARY_API_SECRET` in Render.
+- After changing Cloudinary credentials in Render, trigger a new deploy before testing uploads again.
+
 Upload limit note:
 
 - Upload forms post to API routes, not Server Actions, to avoid multipart body-limit crashes.

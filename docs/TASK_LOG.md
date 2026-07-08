@@ -109,3 +109,9 @@ Last updated: 2026-07-08
 - Added `components/FileSizeInput.tsx` for browser-side file size validation before submit.
 - Added route-level error logging and redirects so Cloudinary/database/upload failures return to the form instead of showing a generic page-load failure.
 - Removed the now-unneeded Server Action body-limit config from `next.config.mjs`.
+
+## 2026-07-08 - Cloudinary Permission Diagnostics
+
+- Identified Cloudinary `403` upload failures caused by API keys missing asset create/upload permission.
+- Added a specific UI error for Cloudinary create-permission failures.
+- Documented Cloudinary API key permission troubleshooting for Render uploads.
