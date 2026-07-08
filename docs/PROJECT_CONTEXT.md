@@ -71,6 +71,7 @@ Profiles:
 - `/profile/edit` requires login and updates only the current user's profile.
 - Avatar and commit images use Cloudinary HTTPS URLs when configured.
 - Image forms submit through API routes instead of Server Actions to avoid multipart body-limit crashes.
+- Upload API routes redirect with relative paths so Render's internal `localhost:10000` origin is not exposed to browsers.
 - Browser-side checks reject oversized files before submit; server validation keeps commit images at 5MB and avatars at 3MB.
 - `/uploads/:filename` serves only local fallback uploads.
 - Public profiles do not expose another user's study commits.

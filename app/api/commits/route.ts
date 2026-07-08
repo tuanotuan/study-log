@@ -14,12 +14,17 @@ function field(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function redirectTo(request: NextRequest, pathOrUrl: string) {
-  return NextResponse.redirect(new URL(pathOrUrl, request.url), 303);
+function redirectTo(pathOrUrl: string) {
+  return new NextResponse(null, {
+    headers: {
+      Location: pathOrUrl
+    },
+    status: 303
+  });
 }
 
-function redirectWithError(request: NextRequest, message: string) {
-  return redirectTo(request, `/dashboard?error=${encodeURIComponent(message)}`);
+function redirectWithError(message: string) {
+  return redirectTo(`/dashboard?error=${encodeURIComponent(message)}`);
 }
 
 function getImageExtension(file: File) {
@@ -44,7 +49,7 @@ export async function POST(request: NextRequest) {
   const user = await getCurrentUser();
 
   if (!user) {
-    return redirectTo(request, "/login");
+    return redirectTo("/login");
   }
 
   let formData: FormData;
@@ -53,7 +58,7 @@ export async function POST(request: NextRequest) {
     formData = await request.formData();
   } catch (error) {
     console.error("[LogStudy commit form parse error]", error);
-    return redirectWithError(request, t.errors.largeImage);
+    return redirectWithError(t.errors.largeImage);
   }
 
   const title = field(formData.get("title"));
@@ -62,33 +67,33 @@ export async function POST(request: NextRequest) {
   const image = formData.get("image");
 
   if (title.length < 1 || title.length > 120) {
-    return redirectWithError(request, t.errors.invalidTitle);
+    return redirectWithError(t.errors.invalidTitle);
   }
 
   if (note.length < 1 || note.length > 500) {
-    return redirectWithError(request, t.errors.invalidNote);
+    return redirectWithError(t.errors.invalidNote);
   }
 
   if (!studyDate) {
-    return redirectWithError(request, t.errors.invalidDate);
+    return redirectWithError(t.errors.invalidDate);
   }
 
   if (!(image instanceof File) || image.size === 0) {
-    return redirectWithError(request, t.errors.missingImage);
+    return redirectWithError(t.errors.missingImage);
   }
 
   if (!ALLOWED_IMAGE_TYPES.has(image.type)) {
-    return redirectWithError(request, t.errors.invalidImage);
+    return redirectWithError(t.errors.invalidImage);
   }
 
   if (image.size > MAX_IMAGE_SIZE) {
-    return redirectWithError(request, t.errors.largeImage);
+    return redirectWithError(t.errors.largeImage);
   }
 
   const extension = getImageExtension(image);
 
   if (!extension) {
-    return redirectWithError(request, t.errors.unknownImage);
+    return redirectWithError(t.errors.unknownImage);
   }
 
   let imageUrl: string;
@@ -103,7 +108,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[LogStudy commit upload error]", error);
     return redirectWithError(
-      request,
       isCloudinaryPermissionError(error) ? t.errors.cloudinaryPermission : t.errors.uploadFailed
     );
   }
@@ -120,9 +124,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("[LogStudy commit save error]", error);
-    return redirectWithError(request, t.errors.saveFailed);
+    return redirectWithError(t.errors.saveFailed);
   }
 
   revalidatePath("/dashboard");
-  return redirectTo(request, "/dashboard");
+  return redirectTo("/dashboard");
 }

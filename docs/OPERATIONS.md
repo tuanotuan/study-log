@@ -144,6 +144,7 @@ Cloudinary permission troubleshooting:
 Upload limit note:
 
 - Upload forms post to API routes, not Server Actions, to avoid multipart body-limit crashes.
+- Upload API redirects use relative `Location` headers so Render's internal `localhost:10000` host is never sent back to the browser.
 - Browser-side checks reject oversized files before submit.
 - The server still validates commit images at 5MB max and avatars at 3MB max.
 - If saving still fails, check Render logs for `[LogStudy commit upload error]`, `[LogStudy profile upload error]`, `[LogStudy commit save error]`, or `[LogStudy profile save error]`.

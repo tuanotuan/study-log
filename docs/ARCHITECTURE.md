@@ -127,6 +127,7 @@ Provider order:
 - Cloudinary is used when `CLOUDINARY_URL` or `CLOUDINARY_CLOUD_NAME`/`CLOUDINARY_API_KEY`/`CLOUDINARY_API_SECRET` are configured.
 - Local `UPLOAD_DIR` is used only as a fallback for local dev or missing Cloudinary env.
 - Image upload forms submit to route handlers (`/api/commits`, `/api/profile`) rather than Server Actions, preventing Next Server Action multipart body-limit failures.
+- Upload route handlers return relative `Location` redirects instead of deriving the origin from `request.url`, because Render may expose the internal `localhost:10000` host to Next.
 
 Cloudinary env:
 

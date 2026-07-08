@@ -13,12 +13,17 @@ function field(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function redirectTo(request: NextRequest, pathOrUrl: string) {
-  return NextResponse.redirect(new URL(pathOrUrl, request.url), 303);
+function redirectTo(pathOrUrl: string) {
+  return new NextResponse(null, {
+    headers: {
+      Location: pathOrUrl
+    },
+    status: 303
+  });
 }
 
-function redirectWithError(request: NextRequest, message: string) {
-  return redirectTo(request, `/profile/edit?error=${encodeURIComponent(message)}`);
+function redirectWithError(message: string) {
+  return redirectTo(`/profile/edit?error=${encodeURIComponent(message)}`);
 }
 
 function getImageExtension(file: File) {
@@ -43,7 +48,7 @@ export async function POST(request: NextRequest) {
   const user = await getCurrentUser();
 
   if (!user) {
-    return redirectTo(request, "/login");
+    return redirectTo("/login");
   }
 
   let formData: FormData;
@@ -52,7 +57,7 @@ export async function POST(request: NextRequest) {
     formData = await request.formData();
   } catch (error) {
     console.error("[LogStudy profile form parse error]", error);
-    return redirectWithError(request, t.errors.largeAvatar);
+    return redirectWithError(t.errors.largeAvatar);
   }
 
   const displayName = field(formData.get("displayName"));
@@ -61,11 +66,11 @@ export async function POST(request: NextRequest) {
   const removeAvatar = formData.get("removeAvatar") === "on";
 
   if (displayName.length > 60) {
-    return redirectWithError(request, t.errors.invalidDisplayName);
+    return redirectWithError(t.errors.invalidDisplayName);
   }
 
   if (bio.length > 280) {
-    return redirectWithError(request, t.errors.invalidBio);
+    return redirectWithError(t.errors.invalidBio);
   }
 
   let avatarUrl = user.avatarUrl;
@@ -78,17 +83,17 @@ export async function POST(request: NextRequest) {
 
   if (avatar instanceof File && avatar.size > 0) {
     if (!ALLOWED_AVATAR_TYPES.has(avatar.type)) {
-      return redirectWithError(request, t.errors.invalidImage);
+      return redirectWithError(t.errors.invalidImage);
     }
 
     if (avatar.size > MAX_AVATAR_SIZE) {
-      return redirectWithError(request, t.errors.largeAvatar);
+      return redirectWithError(t.errors.largeAvatar);
     }
 
     const extension = getImageExtension(avatar);
 
     if (!extension) {
-      return redirectWithError(request, t.errors.unknownImage);
+      return redirectWithError(t.errors.unknownImage);
     }
 
     try {
@@ -101,7 +106,6 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error("[LogStudy profile upload error]", error);
       return redirectWithError(
-        request,
         isCloudinaryPermissionError(error) ? t.errors.cloudinaryPermission : t.errors.uploadFailed
       );
     }
@@ -131,12 +135,12 @@ export async function POST(request: NextRequest) {
 
     if (updatedUser.username) {
       revalidatePath(`/u/${updatedUser.username}`);
-      return redirectTo(request, `/u/${updatedUser.username}?updated=1`);
+      return redirectTo(`/u/${updatedUser.username}?updated=1`);
     }
 
-    return redirectTo(request, "/dashboard");
+    return redirectTo("/dashboard");
   } catch (error) {
     console.error("[LogStudy profile save error]", error);
-    return redirectWithError(request, t.errors.saveFailed);
+    return redirectWithError(t.errors.saveFailed);
   }
 }

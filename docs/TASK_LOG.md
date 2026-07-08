@@ -115,3 +115,8 @@ Last updated: 2026-07-08
 - Identified Cloudinary `403` upload failures caused by API keys missing asset create/upload permission.
 - Added a specific UI error for Cloudinary create-permission failures.
 - Documented Cloudinary API key permission troubleshooting for Render uploads.
+
+## 2026-07-08 - Upload Redirect Host Fix
+
+- Changed upload API route redirects to use relative `Location` headers.
+- Prevented Render's internal `localhost:10000` origin from leaking into browser redirects after profile or commit form submissions.
