@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { updateProfileAction } from "@/app/actions/profile";
+import { FileSizeInput } from "@/components/FileSizeInput";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { getCopy, getLocale } from "@/lib/i18n";
 import { getCurrentUser } from "@/lib/session";
+
+const MAX_AVATAR_SIZE = 3 * 1024 * 1024;
 
 type EditProfilePageProps = {
   searchParams?: Promise<{
@@ -59,17 +61,18 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
             </div>
           ) : null}
 
-          <form action={updateProfileAction} className="space-y-5">
+          <form action="/api/profile" className="space-y-5" encType="multipart/form-data" method="post">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <Avatar avatarUrl={user.avatarUrl} name={user.displayName || user.username || user.email} size="large" />
               <div className="min-w-0 flex-1">
                 <label className="block">
                   <span className="text-sm font-medium text-ink">{t.profile.avatar}</span>
-                  <input
+                  <FileSizeInput
                     accept="image/jpeg,image/png,image/webp,image/gif"
                     className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm outline-none transition file:mr-3 file:rounded-md file:border-0 file:bg-canvas file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-ink focus:border-accent focus:ring-2 focus:ring-blue-100"
+                    maxBytes={MAX_AVATAR_SIZE}
                     name="avatar"
-                    type="file"
+                    tooLargeMessage={t.errors.largeAvatar}
                   />
                 </label>
 

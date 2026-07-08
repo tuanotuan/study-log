@@ -1,16 +1,11 @@
 "use server";
 
-import path from "path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { parseStudyDate } from "@/lib/dates";
 import { getCopy, getLocale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { deleteUploadedImage, uploadImageFile } from "@/lib/uploads";
-
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+import { deleteUploadedImage } from "@/lib/uploads";
 
 function field(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
@@ -18,94 +13,6 @@ function field(value: FormDataEntryValue | null) {
 
 function redirectWithError(message: string): never {
   redirect(`/dashboard?error=${encodeURIComponent(message)}`);
-}
-
-function getImageExtension(file: File) {
-  const extension = path.extname(file.name).toLowerCase();
-
-  if ([".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(extension)) {
-    return extension;
-  }
-
-  const byType: Record<string, string> = {
-    "image/jpeg": ".jpg",
-    "image/png": ".png",
-    "image/webp": ".webp",
-    "image/gif": ".gif"
-  };
-
-  return byType[file.type] ?? "";
-}
-
-export async function createCommitAction(formData: FormData) {
-  const t = getCopy(await getLocale());
-  const user = await getCurrentUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const title = field(formData.get("title"));
-  const note = field(formData.get("note"));
-  const studyDate = parseStudyDate(formData.get("studyDate"));
-  const image = formData.get("image");
-
-  if (title.length < 1 || title.length > 120) {
-    redirectWithError(t.errors.invalidTitle);
-  }
-
-  if (note.length < 1 || note.length > 500) {
-    redirectWithError(t.errors.invalidNote);
-  }
-
-  if (!studyDate) {
-    redirectWithError(t.errors.invalidDate);
-  }
-
-  if (!(image instanceof File) || image.size === 0) {
-    redirectWithError(t.errors.missingImage);
-  }
-
-  if (!ALLOWED_IMAGE_TYPES.has(image.type)) {
-    redirectWithError(t.errors.invalidImage);
-  }
-
-  if (image.size > MAX_IMAGE_SIZE) {
-    redirectWithError(t.errors.largeImage);
-  }
-
-  const extension = getImageExtension(image);
-
-  if (!extension) {
-    redirectWithError(t.errors.unknownImage);
-  }
-
-  let imageUrl: string;
-
-  try {
-    imageUrl = await uploadImageFile({
-      extension,
-      file: image,
-      kind: "commit",
-      ownerId: user.id
-    });
-  } catch (error) {
-    console.error("[LogStudy upload error]", error);
-    redirectWithError(t.errors.uploadFailed);
-  }
-
-  await prisma.studyCommit.create({
-    data: {
-      userId: user.id,
-      title,
-      note,
-      imageUrl,
-      studyDate
-    }
-  });
-
-  revalidatePath("/dashboard");
-  redirect("/dashboard");
 }
 
 export async function deleteCommitAction(formData: FormData) {

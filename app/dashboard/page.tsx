@@ -78,7 +78,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-6 lg:grid-cols-[minmax(0,360px)_1fr]">
         <aside className="space-y-6">
-          <CommitForm labels={t.dashboard} today={formatDateInput(new Date())} error={params?.error} />
+          <CommitForm
+            labels={t.dashboard}
+            today={formatDateInput(new Date())}
+            error={params?.error}
+            largeImageError={t.errors.largeImage}
+          />
         </aside>
 
         <section className="space-y-6">

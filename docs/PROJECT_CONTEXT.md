@@ -70,7 +70,8 @@ Profiles:
 - `/u/<username>` shows public profile fields: avatar, display name, username, bio, and joined date.
 - `/profile/edit` requires login and updates only the current user's profile.
 - Avatar and commit images use Cloudinary HTTPS URLs when configured.
-- Next Server Actions accept upload request bodies up to 8MB; app validation keeps commit images at 5MB and avatars at 3MB.
+- Image forms submit through API routes instead of Server Actions to avoid multipart body-limit crashes.
+- Browser-side checks reject oversized files before submit; server validation keeps commit images at 5MB and avatars at 3MB.
 - `/uploads/:filename` serves only local fallback uploads.
 - Public profiles do not expose another user's study commits.
 

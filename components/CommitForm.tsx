@@ -1,4 +1,6 @@
-import { createCommitAction } from "@/app/actions/commits";
+import { FileSizeInput } from "@/components/FileSizeInput";
+
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 type CommitFormProps = {
   today: string;
@@ -11,9 +13,10 @@ type CommitFormProps = {
     image: string;
     createCommit: string;
   };
+  largeImageError: string;
 };
 
-export function CommitForm({ today, error, labels }: CommitFormProps) {
+export function CommitForm({ today, error, labels, largeImageError }: CommitFormProps) {
   return (
     <section className="rounded-lg border border-border bg-white p-4 shadow-panel">
       <h2 className="text-base font-semibold text-ink">{labels.newCommit}</h2>
@@ -24,7 +27,7 @@ export function CommitForm({ today, error, labels }: CommitFormProps) {
         </div>
       ) : null}
 
-      <form action={createCommitAction} className="mt-4 space-y-4">
+      <form action="/api/commits" className="mt-4 space-y-4" encType="multipart/form-data" method="post">
         <label className="block">
           <span className="text-sm font-medium text-ink">{labels.titleField}</span>
           <input
@@ -59,12 +62,13 @@ export function CommitForm({ today, error, labels }: CommitFormProps) {
 
         <label className="block">
           <span className="text-sm font-medium text-ink">{labels.image}</span>
-          <input
-            className="mt-1 w-full rounded-md border border-dashed border-border bg-canvas px-3 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-ink"
-            name="image"
-            type="file"
+          <FileSizeInput
             accept="image/jpeg,image/png,image/webp,image/gif"
+            className="mt-1 w-full rounded-md border border-dashed border-border bg-canvas px-3 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-ink"
+            maxBytes={MAX_IMAGE_SIZE}
+            name="image"
             required
+            tooLargeMessage={largeImageError}
           />
         </label>
 

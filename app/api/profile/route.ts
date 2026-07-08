@@ -1,8 +1,6 @@
-"use server";
-
 import path from "path";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { NextRequest, NextResponse } from "next/server";
 import { getCopy, getLocale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
@@ -15,8 +13,12 @@ function field(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function redirectWithError(message: string): never {
-  redirect(`/profile/edit?error=${encodeURIComponent(message)}`);
+function redirectTo(request: NextRequest, pathOrUrl: string) {
+  return NextResponse.redirect(new URL(pathOrUrl, request.url), 303);
+}
+
+function redirectWithError(request: NextRequest, message: string) {
+  return redirectTo(request, `/profile/edit?error=${encodeURIComponent(message)}`);
 }
 
 function getImageExtension(file: File) {
@@ -36,12 +38,21 @@ function getImageExtension(file: File) {
   return byType[file.type] ?? "";
 }
 
-export async function updateProfileAction(formData: FormData) {
+export async function POST(request: NextRequest) {
   const t = getCopy(await getLocale());
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    return redirectTo(request, "/login");
+  }
+
+  let formData: FormData;
+
+  try {
+    formData = await request.formData();
+  } catch (error) {
+    console.error("[LogStudy profile form parse error]", error);
+    return redirectWithError(request, t.errors.largeAvatar);
   }
 
   const displayName = field(formData.get("displayName"));
@@ -50,11 +61,11 @@ export async function updateProfileAction(formData: FormData) {
   const removeAvatar = formData.get("removeAvatar") === "on";
 
   if (displayName.length > 60) {
-    redirectWithError(t.errors.invalidDisplayName);
+    return redirectWithError(request, t.errors.invalidDisplayName);
   }
 
   if (bio.length > 280) {
-    redirectWithError(t.errors.invalidBio);
+    return redirectWithError(request, t.errors.invalidBio);
   }
 
   let avatarUrl = user.avatarUrl;
@@ -67,17 +78,17 @@ export async function updateProfileAction(formData: FormData) {
 
   if (avatar instanceof File && avatar.size > 0) {
     if (!ALLOWED_AVATAR_TYPES.has(avatar.type)) {
-      redirectWithError(t.errors.invalidImage);
+      return redirectWithError(request, t.errors.invalidImage);
     }
 
     if (avatar.size > MAX_AVATAR_SIZE) {
-      redirectWithError(t.errors.largeAvatar);
+      return redirectWithError(request, t.errors.largeAvatar);
     }
 
     const extension = getImageExtension(avatar);
 
     if (!extension) {
-      redirectWithError(t.errors.unknownImage);
+      return redirectWithError(request, t.errors.unknownImage);
     }
 
     try {
@@ -88,36 +99,41 @@ export async function updateProfileAction(formData: FormData) {
         ownerId: user.id
       });
     } catch (error) {
-      console.error("[LogStudy upload error]", error);
-      redirectWithError(t.errors.uploadFailed);
+      console.error("[LogStudy profile upload error]", error);
+      return redirectWithError(request, t.errors.uploadFailed);
     }
 
     previousAvatarUrl = user.avatarUrl;
   }
 
-  const updatedUser = await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      displayName: displayName || null,
-      bio: bio || null,
-      avatarUrl
-    },
-    select: {
-      username: true
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        displayName: displayName || null,
+        bio: bio || null,
+        avatarUrl
+      },
+      select: {
+        username: true
+      }
+    });
+
+    if (previousAvatarUrl && previousAvatarUrl !== avatarUrl) {
+      await deleteUploadedImage(previousAvatarUrl);
     }
-  });
 
-  if (previousAvatarUrl && previousAvatarUrl !== avatarUrl) {
-    await deleteUploadedImage(previousAvatarUrl);
+    revalidatePath("/dashboard");
+    revalidatePath("/profile/edit");
+
+    if (updatedUser.username) {
+      revalidatePath(`/u/${updatedUser.username}`);
+      return redirectTo(request, `/u/${updatedUser.username}?updated=1`);
+    }
+
+    return redirectTo(request, "/dashboard");
+  } catch (error) {
+    console.error("[LogStudy profile save error]", error);
+    return redirectWithError(request, t.errors.saveFailed);
   }
-
-  revalidatePath("/dashboard");
-  revalidatePath("/profile/edit");
-
-  if (updatedUser.username) {
-    revalidatePath(`/u/${updatedUser.username}`);
-    redirect(`/u/${updatedUser.username}?updated=1`);
-  }
-
-  redirect("/dashboard");
 }

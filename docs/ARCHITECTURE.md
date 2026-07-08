@@ -8,8 +8,11 @@ Important paths:
 
 - `app/` - Next.js App Router pages, routes, and server actions.
 - `app/actions/auth.ts` - auth, verification, forgot/reset password server actions.
-- `app/actions/commits.ts` - create/delete study commit server actions.
+- `app/actions/commits.ts` - delete study commit server action.
+- `app/api/commits/route.ts` - study commit creation route handler for multipart image uploads.
+- `app/api/profile/route.ts` - profile update route handler for avatar uploads.
 - `components/` - dashboard form, commit list, contribution graph.
+- `components/FileSizeInput.tsx` - client-side upload size validation for file inputs.
 - `components/PublicHeader.tsx` - public marketing/auth header with Login/Register actions.
 - `components/LanguageSwitcher.tsx` - VI/EN switcher backed by a server action and locale cookie.
 - `lib/i18n.ts` - locale helpers and Vietnamese/English copy dictionary.
@@ -40,7 +43,7 @@ Language:
 - Default locale: `vi`.
 - Cookie name: `logstudy_locale`.
 - `app/actions/language.ts` sets the cookie and redirects back to the current page.
-- Server actions read locale so visible validation errors match the selected language.
+- Server actions and upload route handlers read locale so visible validation errors match the selected language.
 
 Protected route:
 
@@ -85,7 +88,7 @@ Important auth rules:
 
 Files:
 
-- `app/actions/profile.ts`
+- `app/api/profile/route.ts`
 - `app/profile/edit/page.tsx`
 - `app/u/[username]/page.tsx`
 
@@ -100,10 +103,11 @@ Rules:
 
 Create flow:
 
-- `createCommitAction` validates title, note, study date, and image.
+- `POST /api/commits` validates title, note, study date, and image.
 - One image is required.
 - Allowed image types: JPG, PNG, WEBP, GIF.
 - Max image size: 5MB.
+- The file input also validates the max size in the browser before submit.
 - Image URL stored in DB. With Cloudinary configured this is an HTTPS Cloudinary URL; otherwise it is `/uploads/<filename>`.
 - Physical upload directory comes from `UPLOAD_DIR`, default `public/uploads`, only for local fallback.
 
@@ -122,7 +126,7 @@ Provider order:
 
 - Cloudinary is used when `CLOUDINARY_URL` or `CLOUDINARY_CLOUD_NAME`/`CLOUDINARY_API_KEY`/`CLOUDINARY_API_SECRET` are configured.
 - Local `UPLOAD_DIR` is used only as a fallback for local dev or missing Cloudinary env.
-- Next Server Actions use `experimental.serverActions.bodySizeLimit = "8mb"` in `next.config.mjs` so multipart image forms can reach app-level validation.
+- Image upload forms submit to route handlers (`/api/commits`, `/api/profile`) rather than Server Actions, preventing Next Server Action multipart body-limit failures.
 
 Cloudinary env:
 

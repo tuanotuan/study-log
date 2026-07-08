@@ -137,8 +137,10 @@ When configured, new avatars and study commit images are stored on Cloudinary an
 
 Upload limit note:
 
-- Next Server Actions are configured with an 8MB body limit in `next.config.mjs`.
-- The app still validates commit images at 5MB max and avatars at 3MB max.
+- Upload forms post to API routes, not Server Actions, to avoid multipart body-limit crashes.
+- Browser-side checks reject oversized files before submit.
+- The server still validates commit images at 5MB max and avatars at 3MB max.
+- If saving still fails, check Render logs for `[LogStudy commit upload error]`, `[LogStudy profile upload error]`, `[LogStudy commit save error]`, or `[LogStudy profile save error]`.
 
 ## Git Workflow
 

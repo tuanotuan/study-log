@@ -102,3 +102,10 @@ Last updated: 2026-07-08
 
 - Increased Next Server Action body limit to 8MB so profile avatar and study commit image forms can submit images above Next's 1MB default.
 - Documented that app validation remains 5MB for commit images and 3MB for avatars.
+
+## 2026-07-08 - Upload Route Handler Hardening
+
+- Replaced image-upload Server Actions with `/api/profile` and `/api/commits` route handlers.
+- Added `components/FileSizeInput.tsx` for browser-side file size validation before submit.
+- Added route-level error logging and redirects so Cloudinary/database/upload failures return to the form instead of showing a generic page-load failure.
+- Removed the now-unneeded Server Action body-limit config from `next.config.mjs`.
