@@ -1,7 +1,5 @@
 "use server";
 
-import { randomUUID } from "crypto";
-import { mkdir, unlink, writeFile } from "fs/promises";
 import path from "path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -9,7 +7,7 @@ import { parseStudyDate } from "@/lib/dates";
 import { getCopy, getLocale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { getUploadDir, getUploadFilename, getUploadPath } from "@/lib/uploads";
+import { deleteUploadedImage, uploadImageFile } from "@/lib/uploads";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
@@ -82,21 +80,26 @@ export async function createCommitAction(formData: FormData) {
     redirectWithError(t.errors.unknownImage);
   }
 
-  const uploadsDir = getUploadDir();
-  await mkdir(uploadsDir, { recursive: true });
+  let imageUrl: string;
 
-  const filename = `${user.id}-${Date.now()}-${randomUUID()}${extension}`;
-  const filePath = getUploadPath(filename);
-  const buffer = Buffer.from(await image.arrayBuffer());
-
-  await writeFile(filePath, buffer);
+  try {
+    imageUrl = await uploadImageFile({
+      extension,
+      file: image,
+      kind: "commit",
+      ownerId: user.id
+    });
+  } catch (error) {
+    console.error("[LogStudy upload error]", error);
+    redirectWithError(t.errors.uploadFailed);
+  }
 
   await prisma.studyCommit.create({
     data: {
       userId: user.id,
       title,
       note,
-      imageUrl: `/uploads/${filename}`,
+      imageUrl,
       studyDate
     }
   });
@@ -138,12 +141,7 @@ export async function deleteCommitAction(formData: FormData) {
     where: { id: commit.id }
   });
 
-  const filename = getUploadFilename(commit.imageUrl);
-
-  if (filename) {
-    const filePath = getUploadPath(filename);
-    await unlink(filePath).catch(() => undefined);
-  }
+  await deleteUploadedImage(commit.imageUrl);
 
   revalidatePath("/dashboard");
   redirect("/dashboard");

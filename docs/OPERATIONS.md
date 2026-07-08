@@ -62,6 +62,13 @@ Email:
 - `RESEND_API_KEY`
 - `RESEND_FROM`
 
+Images:
+
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+- `CLOUDINARY_FOLDER`
+
 ## Render Deployment
 
 Render Blueprint:
@@ -84,13 +91,13 @@ Configured Render env in Blueprint:
 - `APP_URL=https://logstudy.onrender.com`
 - `AUTH_CODE_DEBUG=true`
 - Optional Resend secrets for HTTP email delivery.
+- Optional Cloudinary secrets for persistent image delivery.
 
 Free plan caveat:
 
 - `/tmp` is not durable.
-- Uploaded images can disappear after restart/redeploy.
+- Uploaded images are persistent only when Cloudinary is configured.
 - Database rows are persistent because they live in external Neon Postgres.
-- Move uploads to object storage later if image persistence is required.
 
 ## Auto Deploy
 
@@ -114,6 +121,18 @@ Recommended provider: Neon free Postgres.
 5. Render start runs `prisma migrate deploy` through `npm run db:ensure`.
 
 Neon recommends a pooled URL for app runtime and a direct URL for Prisma CLI migrations.
+
+## How To Set Up Free Persistent Images
+
+Recommended provider: Cloudinary free plan.
+
+1. Create a Cloudinary account.
+2. In the Cloudinary dashboard, copy `cloud_name`, `api_key`, and `api_secret`.
+3. Set these Render env vars: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`.
+4. Set `CLOUDINARY_FOLDER=logstudy`.
+5. Save, rebuild, and deploy.
+
+When configured, new avatars and study commit images are stored on Cloudinary and DB rows store HTTPS image URLs. Existing local `/uploads/...` images are not migrated automatically.
 
 ## Git Workflow
 

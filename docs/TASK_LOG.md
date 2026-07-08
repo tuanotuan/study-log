@@ -89,3 +89,10 @@ Last updated: 2026-07-07
 - Added `DIRECT_URL` for Prisma migrations and made `DATABASE_URL`/`DIRECT_URL` manual Render secrets.
 - Rebuilt migrations as a Postgres baseline for a new external database.
 - Documented Neon free Postgres setup and noted uploads are still not persistent on Render free.
+
+## 2026-07-08 - Persistent Cloudinary Images
+
+- Added Cloudinary upload/delete support for study commit images and profile avatars.
+- Kept local `UPLOAD_DIR` as a development fallback when Cloudinary env vars are missing.
+- Added Cloudinary env vars to Render Blueprint, `.env.example`, README, and handoff docs.
+- Allowed `res.cloudinary.com` in Next image config.

@@ -46,6 +46,12 @@ AUTH_CODE_DEBUG="true"
 # Optional email provider. If omitted or invalid, auth codes are printed in server logs.
 RESEND_API_KEY=""
 RESEND_FROM="LogStudy <onboarding@resend.dev>"
+
+# Optional persistent image storage. If omitted, uploads fall back to local UPLOAD_DIR.
+CLOUDINARY_CLOUD_NAME=""
+CLOUDINARY_API_KEY=""
+CLOUDINARY_API_SECRET=""
+CLOUDINARY_FOLDER="logstudy"
 ```
 
 ## Database
@@ -93,7 +99,7 @@ Render config chinh:
 - `AUTH_CODE_DEBUG`: `true`
 - `SESSION_SECRET`: Render tu generate
 
-Database được lưu persistent trong Neon. Render free vẫn không có filesystem bền vững, nên ảnh upload trong `/tmp/logstudy-uploads` vẫn có thể mất sau restart/redeploy. Muốn ảnh cũng persistent thì chuyển upload sang object storage ở task sau.
+Database được lưu persistent trong Neon. Ảnh upload/avatar được lưu persistent trong Cloudinary nếu cấu hình `CLOUDINARY_*`; nếu thiếu cấu hình Cloudinary thì app fallback về `UPLOAD_DIR`.
 
 ## Auto deploy tu GitHub len Render
 
@@ -121,6 +127,19 @@ RESEND_FROM=LogStudy <onboarding@resend.dev>
 
 Voi Resend, can tao API key va dat `RESEND_FROM`; de production nen verify domain rieng. Neu chua cau hinh Resend hoac Resend loi, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Log co `[LogStudy resend email error]` neu Resend tu choi request. Mac dinh app hien test code ngay tren trang verify/reset de demo nhanh; dat `AUTH_CODE_DEBUG=false` de tat.
 
+## Persistent image uploads
+
+De anh commit/avatar khong mat khi Render restart, cau hinh Cloudinary tren Render:
+
+```env
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+CLOUDINARY_FOLDER=logstudy
+```
+
+Neu thieu cac bien tren, app van upload local vao `UPLOAD_DIR` de dev/test nhanh.
+
 ## Scripts
 
 ```bash
@@ -132,4 +151,4 @@ npm run prisma:studio
 
 ## Ghi chu upload anh
 
-Local mac dinh luu anh trong `public/uploads`. Tren Render, app luu anh trong `UPLOAD_DIR` va phuc vu anh qua route `/uploads/:filename`.
+Local mac dinh luu anh trong `public/uploads`. Tren Render, nen cau hinh Cloudinary de anh persistent; route `/uploads/:filename` chi phuc vu fallback local.

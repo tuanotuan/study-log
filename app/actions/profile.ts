@@ -1,14 +1,12 @@
 "use server";
 
-import { randomUUID } from "crypto";
-import { mkdir, unlink, writeFile } from "fs/promises";
 import path from "path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCopy, getLocale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { getUploadDir, getUploadFilename, getUploadPath } from "@/lib/uploads";
+import { deleteUploadedImage, uploadImageFile } from "@/lib/uploads";
 
 const MAX_AVATAR_SIZE = 3 * 1024 * 1024;
 const ALLOWED_AVATAR_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
@@ -82,16 +80,19 @@ export async function updateProfileAction(formData: FormData) {
       redirectWithError(t.errors.unknownImage);
     }
 
-    const uploadsDir = getUploadDir();
-    await mkdir(uploadsDir, { recursive: true });
+    try {
+      avatarUrl = await uploadImageFile({
+        extension,
+        file: avatar,
+        kind: "avatar",
+        ownerId: user.id
+      });
+    } catch (error) {
+      console.error("[LogStudy upload error]", error);
+      redirectWithError(t.errors.uploadFailed);
+    }
 
-    const filename = `${user.id}-avatar-${Date.now()}-${randomUUID()}${extension}`;
-    const filePath = getUploadPath(filename);
-    const buffer = Buffer.from(await avatar.arrayBuffer());
-
-    await writeFile(filePath, buffer);
     previousAvatarUrl = user.avatarUrl;
-    avatarUrl = `/uploads/${filename}`;
   }
 
   const updatedUser = await prisma.user.update({
@@ -107,11 +108,7 @@ export async function updateProfileAction(formData: FormData) {
   });
 
   if (previousAvatarUrl && previousAvatarUrl !== avatarUrl) {
-    const filename = getUploadFilename(previousAvatarUrl);
-
-    if (filename) {
-      await unlink(getUploadPath(filename)).catch(() => undefined);
-    }
+    await deleteUploadedImage(previousAvatarUrl);
   }
 
   revalidatePath("/dashboard");

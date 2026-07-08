@@ -1,3 +1,23 @@
+import { createHash, randomUUID } from "crypto";
+import { mkdir, unlink, writeFile } from "fs/promises";
+
+type UploadKind = "avatar" | "commit";
+
+type UploadImageOptions = {
+  extension: string;
+  file: File;
+  kind: UploadKind;
+  ownerId: string;
+};
+
+type CloudinaryUploadResponse = {
+  secure_url?: string;
+  public_id?: string;
+  error?: {
+    message?: string;
+  };
+};
+
 export function getUploadDir() {
   return process.env.UPLOAD_DIR || "public/uploads";
 }
@@ -18,4 +38,168 @@ export function getUploadFilename(imageUrl: string) {
   }
 
   return filename;
+}
+
+function getCloudinaryConfig() {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim();
+  const apiKey = process.env.CLOUDINARY_API_KEY?.trim();
+  const apiSecret = process.env.CLOUDINARY_API_SECRET?.trim();
+  const folder = process.env.CLOUDINARY_FOLDER?.trim() || "logstudy";
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    return null;
+  }
+
+  return { apiKey, apiSecret, cloudName, folder };
+}
+
+function signCloudinaryParams(params: Record<string, string>, apiSecret: string) {
+  const payload = Object.keys(params)
+    .sort()
+    .map((key) => `${key}=${params[key]}`)
+    .join("&");
+
+  return createHash("sha1").update(`${payload}${apiSecret}`).digest("hex");
+}
+
+function cloudinaryFolder(kind: UploadKind, baseFolder: string) {
+  return `${baseFolder}/${kind === "avatar" ? "avatars" : "commits"}`;
+}
+
+async function uploadToCloudinary({ file, kind, ownerId }: UploadImageOptions) {
+  const config = getCloudinaryConfig();
+
+  if (!config) {
+    return null;
+  }
+
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  const folder = cloudinaryFolder(kind, config.folder);
+  const publicId = `${ownerId}-${kind}-${Date.now()}-${randomUUID()}`;
+  const signature = signCloudinaryParams(
+    {
+      folder,
+      public_id: publicId,
+      timestamp
+    },
+    config.apiSecret
+  );
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("api_key", config.apiKey);
+  formData.append("folder", folder);
+  formData.append("public_id", publicId);
+  formData.append("signature", signature);
+  formData.append("timestamp", timestamp);
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${config.cloudName}/image/upload`, {
+    method: "POST",
+    body: formData
+  });
+  const body = (await response.json()) as CloudinaryUploadResponse;
+
+  if (!response.ok || !body.secure_url) {
+    throw new Error(body.error?.message || `Cloudinary upload failed with status ${response.status}`);
+  }
+
+  return body.secure_url;
+}
+
+async function uploadToLocal({ extension, file, kind, ownerId }: UploadImageOptions) {
+  const uploadsDir = getUploadDir();
+  await mkdir(uploadsDir, { recursive: true });
+
+  const filename = `${ownerId}-${kind}-${Date.now()}-${randomUUID()}${extension}`;
+  const filePath = getUploadPath(filename);
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  await writeFile(filePath, buffer);
+  return `/uploads/${filename}`;
+}
+
+export async function uploadImageFile(options: UploadImageOptions) {
+  const cloudinaryUrl = await uploadToCloudinary(options);
+  return cloudinaryUrl ?? uploadToLocal(options);
+}
+
+function getCloudinaryPublicId(imageUrl: string) {
+  const config = getCloudinaryConfig();
+
+  if (!config) {
+    return null;
+  }
+
+  let url: URL;
+
+  try {
+    url = new URL(imageUrl);
+  } catch {
+    return null;
+  }
+
+  const prefix = `/${config.cloudName}/image/upload/`;
+
+  if (url.hostname !== "res.cloudinary.com" || !url.pathname.startsWith(prefix)) {
+    return null;
+  }
+
+  const parts = url.pathname.slice(prefix.length).split("/").filter(Boolean);
+  const versionIndex = parts.findIndex((part) => /^v\d+$/.test(part));
+  const publicIdParts = versionIndex >= 0 ? parts.slice(versionIndex + 1) : parts;
+  const last = publicIdParts.pop();
+
+  if (!last) {
+    return null;
+  }
+
+  publicIdParts.push(last.replace(/\.[^.]+$/, ""));
+  return publicIdParts.join("/");
+}
+
+async function deleteCloudinaryImage(imageUrl: string) {
+  const config = getCloudinaryConfig();
+  const publicId = getCloudinaryPublicId(imageUrl);
+
+  if (!config || !publicId) {
+    return false;
+  }
+
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  const signature = signCloudinaryParams(
+    {
+      invalidate: "true",
+      public_id: publicId,
+      timestamp
+    },
+    config.apiSecret
+  );
+
+  const formData = new FormData();
+  formData.append("api_key", config.apiKey);
+  formData.append("invalidate", "true");
+  formData.append("public_id", publicId);
+  formData.append("signature", signature);
+  formData.append("timestamp", timestamp);
+
+  await fetch(`https://api.cloudinary.com/v1_1/${config.cloudName}/image/destroy`, {
+    method: "POST",
+    body: formData
+  }).catch((error) => {
+    console.error("[LogStudy cloudinary delete error]", error);
+  });
+
+  return true;
+}
+
+export async function deleteUploadedImage(imageUrl: string) {
+  if (await deleteCloudinaryImage(imageUrl)) {
+    return;
+  }
+
+  const filename = getUploadFilename(imageUrl);
+
+  if (filename) {
+    await unlink(getUploadPath(filename)).catch(() => undefined);
+  }
 }

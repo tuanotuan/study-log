@@ -38,6 +38,7 @@ Live app:
 - Resend HTTP email API support for Render-friendly delivery
 - Render free web service for demo deploy
 - Neon free Postgres for persistent database storage
+- Cloudinary for persistent avatar and study image storage
 
 ## Current Important Behavior
 
@@ -68,7 +69,8 @@ Profiles:
 
 - `/u/<username>` shows public profile fields: avatar, display name, username, bio, and joined date.
 - `/profile/edit` requires login and updates only the current user's profile.
-- Avatar images are stored in the same upload storage and served through `/uploads/:filename`.
+- Avatar and commit images use Cloudinary HTTPS URLs when configured.
+- `/uploads/:filename` serves only local fallback uploads.
 - Public profiles do not expose another user's study commits.
 
 Email:
@@ -83,15 +85,17 @@ Deploy:
 
 - Render free plan is configured in `render.yaml`.
 - Database persistence uses external Postgres through Neon, configured with `DATABASE_URL` and `DIRECT_URL`.
-- Render free still stores uploads in `/tmp`, so uploaded images can be lost on restart/redeploy.
+- Image persistence uses Cloudinary when `CLOUDINARY_*` env vars are configured.
 - Auto-deploy is configured through both Render Blueprint `autoDeployTrigger: commit` and a GitHub Actions deploy-hook workflow.
 
 ## Known Caveats
 
 - Render free instances can sleep.
-- Render free filesystem is not persistent. Uploaded images can disappear after restart/redeploy until object storage is added.
+- Render free filesystem is not persistent. Uploads only disappear if Cloudinary is not configured and the app falls back to local `UPLOAD_DIR`.
 - Neon free Postgres keeps database rows persistent across Render deploys/restarts.
+- Cloudinary keeps uploaded images persistent across Render deploys/restarts.
 - Real email delivery requires `RESEND_API_KEY` and `RESEND_FROM`.
+- Persistent image delivery requires `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`.
 - If deploy auto-trigger does not run, check GitHub secret `RENDER_DEPLOY_HOOK_URL` and Render service Events.
 
 ## Current Commit Workflow

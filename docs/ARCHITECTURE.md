@@ -32,6 +32,7 @@ Public or auth routes:
 - `/profile/edit` - protected profile editor for avatar, display name, and bio.
 - `/u/[username]` - public profile by username.
 - `/uploads/[filename]` - serves uploaded images from `UPLOAD_DIR`.
+- Cloudinary image URLs are served directly from `https://res.cloudinary.com/...`.
 
 Language:
 
@@ -93,7 +94,7 @@ Rules:
 - Only the logged-in owner can update their profile.
 - Public profile lookup is by unique lowercase username.
 - Public profile pages do not show another user's study commits.
-- Avatars are uploaded to `UPLOAD_DIR` and stored as `/uploads/<filename>`.
+- Avatars use Cloudinary when configured; otherwise they fall back to `UPLOAD_DIR` and `/uploads/<filename>`.
 
 ## Study Commits
 
@@ -103,13 +104,31 @@ Create flow:
 - One image is required.
 - Allowed image types: JPG, PNG, WEBP, GIF.
 - Max image size: 5MB.
-- Image path stored in DB as `/uploads/<filename>`.
-- Physical upload directory comes from `UPLOAD_DIR`, default `public/uploads`.
+- Image URL stored in DB. With Cloudinary configured this is an HTTPS Cloudinary URL; otherwise it is `/uploads/<filename>`.
+- Physical upload directory comes from `UPLOAD_DIR`, default `public/uploads`, only for local fallback.
 
 Delete flow:
 
 - `deleteCommitAction` checks `id` and current `user.id`.
-- It deletes the DB row and attempts to delete the image file.
+- It deletes the DB row and attempts to delete the image from Cloudinary or local fallback storage.
+
+## Image Storage
+
+File:
+
+- `lib/uploads.ts`
+
+Provider order:
+
+- Cloudinary is used when `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` are configured.
+- Local `UPLOAD_DIR` is used only as a fallback for local dev or missing Cloudinary env.
+
+Cloudinary env:
+
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+- `CLOUDINARY_FOLDER`
 
 ## Contribution Graph
 

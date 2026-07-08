@@ -166,6 +166,7 @@ export const copy = {
       largeAvatar: "Ảnh đại diện tối đa 3MB.",
       invalidDisplayName: "Tên hiển thị tối đa 60 ký tự.",
       invalidBio: "Tiểu sử tối đa 280 ký tự.",
+      uploadFailed: "Không thể upload ảnh. Vui lòng thử lại.",
       unknownImage: "Không nhận diện được định dạng ảnh.",
       missingCommit: "Không tìm thấy commit cần xóa.",
       deleteForbidden: "Bạn không có quyền xóa commit này."
@@ -314,6 +315,7 @@ export const copy = {
       largeAvatar: "Avatar must be at most 3MB.",
       invalidDisplayName: "Display name must be at most 60 characters.",
       invalidBio: "Bio must be at most 280 characters.",
+      uploadFailed: "Could not upload the image. Please try again.",
       unknownImage: "Could not identify image format.",
       missingCommit: "Commit was not found.",
       deleteForbidden: "You do not have permission to delete this commit."
