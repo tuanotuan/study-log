@@ -67,6 +67,7 @@ Images:
 - `CLOUDINARY_CLOUD_NAME`
 - `CLOUDINARY_API_KEY`
 - `CLOUDINARY_API_SECRET`
+- `CLOUDINARY_URL`
 - `CLOUDINARY_FOLDER`
 
 ## Render Deployment
@@ -128,7 +129,7 @@ Recommended provider: Cloudinary free plan.
 
 1. Create a Cloudinary account.
 2. In the Cloudinary dashboard, copy `cloud_name`, `api_key`, and `api_secret`.
-3. Set these Render env vars: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`.
+3. Set either `CLOUDINARY_URL` from Cloudinary's dashboard snippet, or set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`. If both are present, the app uses `CLOUDINARY_URL` first.
 4. Set `CLOUDINARY_FOLDER=logstudy`.
 5. Save, rebuild, and deploy.
 

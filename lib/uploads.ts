@@ -18,6 +18,13 @@ type CloudinaryUploadResponse = {
   };
 };
 
+type CloudinaryConfig = {
+  apiKey: string;
+  apiSecret: string;
+  cloudName: string;
+  folder: string;
+};
+
 export function getUploadDir() {
   return process.env.UPLOAD_DIR || "public/uploads";
 }
@@ -40,17 +47,60 @@ export function getUploadFilename(imageUrl: string) {
   return filename;
 }
 
+function parseCloudinaryUrl(folder: string): CloudinaryConfig | null {
+  const value = process.env.CLOUDINARY_URL?.trim();
+
+  if (!value) {
+    return null;
+  }
+
+  try {
+    const url = new URL(value);
+
+    if (url.protocol !== "cloudinary:" || !url.username || !url.password || !url.hostname) {
+      return null;
+    }
+
+    return {
+      apiKey: decodeURIComponent(url.username),
+      apiSecret: decodeURIComponent(url.password),
+      cloudName: url.hostname,
+      folder
+    };
+  } catch {
+    console.warn("[LogStudy cloudinary config error]", {
+      hasCloudinaryUrl: true,
+      message: "CLOUDINARY_URL is not a valid cloudinary:// URL"
+    });
+    return null;
+  }
+}
+
 function getCloudinaryConfig() {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim();
   const apiKey = process.env.CLOUDINARY_API_KEY?.trim();
   const apiSecret = process.env.CLOUDINARY_API_SECRET?.trim();
   const folder = process.env.CLOUDINARY_FOLDER?.trim() || "logstudy";
+  const urlConfig = parseCloudinaryUrl(folder);
 
-  if (!cloudName || !apiKey || !apiSecret) {
-    return null;
+  if (urlConfig) {
+    return urlConfig;
   }
 
-  return { apiKey, apiSecret, cloudName, folder };
+  if (cloudName || apiKey || apiSecret) {
+    if (!cloudName || !apiKey || !apiSecret) {
+      console.warn("[LogStudy cloudinary config missing]", {
+        hasCloudName: Boolean(cloudName),
+        hasApiKey: Boolean(apiKey),
+        hasApiSecret: Boolean(apiSecret)
+      });
+      return null;
+    }
+
+    return { apiKey, apiSecret, cloudName, folder };
+  }
+
+  return parseCloudinaryUrl(folder);
 }
 
 function signCloudinaryParams(params: Record<string, string>, apiSecret: string) {
@@ -66,7 +116,7 @@ function cloudinaryFolder(kind: UploadKind, baseFolder: string) {
   return `${baseFolder}/${kind === "avatar" ? "avatars" : "commits"}`;
 }
 
-async function uploadToCloudinary({ file, kind, ownerId }: UploadImageOptions) {
+async function uploadToCloudinary({ extension, file, kind, ownerId }: UploadImageOptions) {
   const config = getCloudinaryConfig();
 
   if (!config) {
@@ -86,7 +136,7 @@ async function uploadToCloudinary({ file, kind, ownerId }: UploadImageOptions) {
   );
 
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append("file", file, `${publicId}${extension}`);
   formData.append("api_key", config.apiKey);
   formData.append("folder", folder);
   formData.append("public_id", publicId);
@@ -97,11 +147,32 @@ async function uploadToCloudinary({ file, kind, ownerId }: UploadImageOptions) {
     method: "POST",
     body: formData
   });
-  const body = (await response.json()) as CloudinaryUploadResponse;
+  const rawBody = await response.text();
+  let body: CloudinaryUploadResponse = {};
+
+  try {
+    body = JSON.parse(rawBody) as CloudinaryUploadResponse;
+  } catch {
+    body = {};
+  }
 
   if (!response.ok || !body.secure_url) {
+    console.error("[LogStudy cloudinary upload error]", {
+      body: rawBody.slice(0, 500),
+      cloudName: config.cloudName,
+      folder,
+      kind,
+      status: response.status
+    });
     throw new Error(body.error?.message || `Cloudinary upload failed with status ${response.status}`);
   }
+
+  console.info("[LogStudy cloudinary upload sent]", {
+    cloudName: config.cloudName,
+    folder,
+    kind,
+    publicId: body.public_id
+  });
 
   return body.secure_url;
 }

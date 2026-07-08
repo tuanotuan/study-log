@@ -48,6 +48,8 @@ RESEND_API_KEY=""
 RESEND_FROM="LogStudy <onboarding@resend.dev>"
 
 # Optional persistent image storage. If omitted, uploads fall back to local UPLOAD_DIR.
+# You can either set CLOUDINARY_URL or the three separate CLOUDINARY_* values below.
+CLOUDINARY_URL=""
 CLOUDINARY_CLOUD_NAME=""
 CLOUDINARY_API_KEY=""
 CLOUDINARY_API_SECRET=""
@@ -132,11 +134,19 @@ Voi Resend, can tao API key va dat `RESEND_FROM`; de production nen verify domai
 De anh commit/avatar khong mat khi Render restart, cau hinh Cloudinary tren Render:
 
 ```env
+CLOUDINARY_URL=cloudinary://your_api_key:your_api_secret@your-cloud-name
+```
+
+Hoặc set từng biến:
+
+```env
 CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
 CLOUDINARY_FOLDER=logstudy
 ```
+
+Neu `CLOUDINARY_URL` duoc set, app se uu tien bien nay truoc cac bien Cloudinary rieng le.
 
 Neu thieu cac bien tren, app van upload local vao `UPLOAD_DIR` de dev/test nhanh.
 

@@ -120,7 +120,7 @@ File:
 
 Provider order:
 
-- Cloudinary is used when `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` are configured.
+- Cloudinary is used when `CLOUDINARY_URL` or `CLOUDINARY_CLOUD_NAME`/`CLOUDINARY_API_KEY`/`CLOUDINARY_API_SECRET` are configured.
 - Local `UPLOAD_DIR` is used only as a fallback for local dev or missing Cloudinary env.
 
 Cloudinary env:
@@ -128,6 +128,7 @@ Cloudinary env:
 - `CLOUDINARY_CLOUD_NAME`
 - `CLOUDINARY_API_KEY`
 - `CLOUDINARY_API_SECRET`
+- `CLOUDINARY_URL`
 - `CLOUDINARY_FOLDER`
 
 ## Contribution Graph

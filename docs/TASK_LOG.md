@@ -96,3 +96,4 @@ Last updated: 2026-07-07
 - Kept local `UPLOAD_DIR` as a development fallback when Cloudinary env vars are missing.
 - Added Cloudinary env vars to Render Blueprint, `.env.example`, README, and handoff docs.
 - Allowed `res.cloudinary.com` in Next image config.
+- Added Cloudinary upload diagnostics and support for prioritized `CLOUDINARY_URL`.

@@ -95,7 +95,7 @@ Deploy:
 - Neon free Postgres keeps database rows persistent across Render deploys/restarts.
 - Cloudinary keeps uploaded images persistent across Render deploys/restarts.
 - Real email delivery requires `RESEND_API_KEY` and `RESEND_FROM`.
-- Persistent image delivery requires `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`.
+- Persistent image delivery requires `CLOUDINARY_URL` or separate `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`.
 - If deploy auto-trigger does not run, check GitHub secret `RENDER_DEPLOY_HOOK_URL` and Render service Events.
 
 ## Current Commit Workflow
