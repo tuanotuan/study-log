@@ -96,7 +96,8 @@ Rules:
 
 - Only the logged-in owner can update their profile.
 - Public profile lookup is by unique lowercase username.
-- Public profile pages do not show another user's study commits.
+- Public profile pages query only study dates to render a 365-day contribution graph and aggregate stats.
+- Individual commit titles, notes, images, and records remain visible only to their owner.
 - Avatars use Cloudinary when configured; otherwise they fall back to `UPLOAD_DIR` and `/uploads/<filename>`.
 
 ## Study Commits

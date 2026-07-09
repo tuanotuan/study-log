@@ -4,7 +4,7 @@ Web app ghi lai qua trinh hoc tap moi ngay bang cac "commit hoc tap": 1 anh, ghi
 
 Trang public co header voi Login/Register o goc tren ben phai; user da login vao `/` se duoc dua thang toi dashboard. UI ho tro tieng Viet va English qua nut VI/EN.
 
-Moi tai khoan co ho so public tai `/u/<username>` voi avatar, ten hien thi va tieu su. Trang `/profile/edit` cho user dang login cap nhat ho so cua chinh minh.
+Moi tai khoan co ho so public tai `/u/<username>` voi avatar, ten hien thi, tieu su, contribution graph va thong ke hoc tap tong hop. Noi dung tung commit van chi hien thi cho chu tai khoan. Trang `/profile/edit` cho user dang login cap nhat ho so cua chinh minh.
 
 ## Stack
 

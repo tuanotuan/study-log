@@ -205,7 +205,8 @@ If Resend is configured:
 2. Upload an avatar, set display name and bio, then save.
 3. Confirm redirect to `/u/<username>` and the public profile shows the new data.
 4. Open `/dashboard`; the header should show the avatar/name and link to the profile.
-5. Open `/u/<another-username>` if available; it should show only profile metadata, not study commits.
+5. Open `/u/<another-username>` if available; it should show their contribution graph and aggregate stats.
+6. Confirm the profile does not expose individual commit titles, notes, images, or records.
 
 ## How To Test Language Switching
 

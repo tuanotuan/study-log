@@ -120,3 +120,8 @@ Last updated: 2026-07-08
 
 - Changed upload API route redirects to use relative `Location` headers.
 - Prevented Render's internal `localhost:10000` origin from leaking into browser redirects after profile or commit form submissions.
+
+## 2026-07-09 - Public Profile Contribution Graph
+
+- Added the 365-day contribution graph and aggregate study stats to every public user profile.
+- Public profile queries use study dates only; commit titles, notes, images, and individual records remain private.

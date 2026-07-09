@@ -50,7 +50,7 @@ Public UI:
 - Locale is stored in `logstudy_locale` and changed through `components/LanguageSwitcher.tsx`.
 - Logged-in users visiting `/` are redirected to `/dashboard`.
 - Login and register pages use the same top header and compact form panels.
-- Public profile pages show profile metadata only; study commits remain private to their owner.
+- Public profile pages show profile metadata plus an aggregate contribution graph and study stats; individual commit content remains private to its owner.
 
 Authentication:
 
@@ -67,14 +67,14 @@ Authentication:
 
 Profiles:
 
-- `/u/<username>` shows public profile fields: avatar, display name, username, bio, and joined date.
+- `/u/<username>` shows public profile fields plus the user's 365-day contribution graph and aggregate study stats.
 - `/profile/edit` requires login and updates only the current user's profile.
 - Avatar and commit images use Cloudinary HTTPS URLs when configured.
 - Image forms submit through API routes instead of Server Actions to avoid multipart body-limit crashes.
 - Upload API routes redirect with relative paths so Render's internal `localhost:10000` origin is not exposed to browsers.
 - Browser-side checks reject oversized files before submit; server validation keeps commit images at 5MB and avatars at 3MB.
 - `/uploads/:filename` serves only local fallback uploads.
-- Public profiles do not expose another user's study commits.
+- Public profiles expose only study dates as aggregate graph counts and stats; commit titles, notes, images, and records remain private.
 
 Email:
 
