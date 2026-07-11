@@ -1,3 +1,4 @@
+import { CalendarCheck2, Flame, GitCommitHorizontal, Trophy } from "lucide-react";
 import { addUtcDays, formatHumanDate } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import type { CommitDay, ContributionStats } from "@/lib/stats";
@@ -62,6 +63,8 @@ export function ContributionGraph({ days, labels, locale, stats }: ContributionG
     cells.slice(index * 7, index * 7 + 7)
   );
   const dateLocale = locale === "vi" ? "vi-VN" : "en-US";
+  const monthFormatter = new Intl.DateTimeFormat(dateLocale, { month: "short", timeZone: "UTC" });
+  const weekdayLabels = locale === "vi" ? ["", "T2", "", "T4", "", "T6", ""] : ["", "Mon", "", "Wed", "", "Fri", ""];
 
   return (
     <section className="rounded-lg border border-border bg-white p-4 shadow-panel">
@@ -83,44 +86,67 @@ export function ContributionGraph({ days, labels, locale, stats }: ContributionG
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-4">
-        <Stat label={labels.totalCommits} value={stats.totalCommits.toString()} />
-        <Stat label={labels.currentStreak} value={`${stats.currentStreak} ${labels.days}`} />
-        <Stat label={labels.maxStreak} value={`${stats.maxStreak} ${labels.days}`} />
-        <Stat label={labels.activeDays} value={stats.activeDays.toString()} />
+      <div className="grid border-y border-border sm:grid-cols-4 sm:divide-x sm:divide-border">
+        <Stat icon={GitCommitHorizontal} label={labels.totalCommits} value={stats.totalCommits.toString()} />
+        <Stat icon={Flame} label={labels.currentStreak} value={`${stats.currentStreak} ${labels.days}`} />
+        <Stat icon={Trophy} label={labels.maxStreak} value={`${stats.maxStreak} ${labels.days}`} />
+        <Stat icon={CalendarCheck2} label={labels.activeDays} value={stats.activeDays.toString()} />
       </div>
 
       <div className="graph-scroll mt-5 overflow-x-auto pb-2">
-        <div className="flex min-w-max gap-[3px]">
-          {weeks.map((week, weekIndex) => (
-            <div className="grid grid-rows-7 gap-[3px]" key={weekIndex}>
-              {week.map((day) => {
+        <div className="min-w-max">
+          <div className="mb-2 ml-8 flex gap-[3px] text-[10px] text-muted">
+            {weeks.map((week, weekIndex) => {
+              const firstMonthDay = week.find((day) => !("isPadding" in day) && day.date.getUTCDate() <= 7);
+
+              return (
+                <span className="w-3 overflow-visible whitespace-nowrap" key={weekIndex}>
+                  {firstMonthDay ? monthFormatter.format(firstMonthDay.date) : ""}
+                </span>
+              );
+            })}
+          </div>
+          <div className="flex gap-2">
+            <div className="grid w-6 grid-rows-7 gap-[3px] text-[9px] leading-3 text-muted">
+              {weekdayLabels.map((label, index) => <span key={index}>{label}</span>)}
+            </div>
+            <div className="flex gap-[3px]">
+              {weeks.map((week, weekIndex) => (
+                <div className="grid grid-rows-7 gap-[3px]" key={weekIndex}>
+                  {week.map((day) => {
                 const isPadding = "isPadding" in day;
                 const count = isPadding ? 0 : day.count;
                 const formattedDate = formatHumanDate(day.date, dateLocale);
 
-                return (
-                  <div
-                    aria-label={`${formattedDate}: ${count} commit`}
-                    className={`h-3 w-3 rounded-[2px] ${isPadding ? "bg-transparent" : levelForCount(day.count)}`}
-                    key={day.date.toISOString()}
-                    title={`${formattedDate} - ${count} commit`}
-                  />
-                );
-              })}
+                    return (
+                      <div
+                        aria-label={`${formattedDate}: ${count} commit`}
+                        className={`h-3 w-3 rounded-[2px] outline-none transition-transform hover:scale-125 focus:scale-125 ${isPadding ? "bg-transparent" : levelForCount(day.count)}`}
+                        key={day.date.toISOString()}
+                        role={isPadding ? undefined : "img"}
+                        tabIndex={isPadding ? undefined : 0}
+                        title={`${formattedDate} - ${count} commit`}
+                      />
+                    );
+                  })}
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ icon: Icon, label, value }: { icon: typeof Flame; label: string; value: string }) {
   return (
-    <div className="rounded-md border border-border bg-canvas px-3 py-3">
-      <p className="text-xs text-muted">{label}</p>
-      <p className="mt-1 text-lg font-semibold text-ink">{value}</p>
+    <div className="flex items-center gap-3 px-3 py-3">
+      <Icon aria-hidden="true" className="shrink-0 text-success" size={18} strokeWidth={1.8} />
+      <div>
+        <p className="text-xs text-muted">{label}</p>
+        <p className="mt-0.5 text-lg font-semibold tabular-nums text-ink">{value}</p>
+      </div>
     </div>
   );
 }

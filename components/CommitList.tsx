@@ -1,27 +1,38 @@
 import type { StudyCommit } from "@prisma/client";
 import Image from "next/image";
+import Link from "next/link";
 import { deleteCommitAction } from "@/app/actions/commits";
+import { DeleteCommitButton } from "@/components/DeleteCommitButton";
 import { formatHumanDate } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 
 type CommitListProps = {
   commits: StudyCommit[];
+  currentPage: number;
   locale: Locale;
+  totalCommits: number;
+  totalPages: number;
   labels: {
     recentCommits: string;
     emptyCommits: string;
     deleteCommit: string;
+    deleteConfirm: string;
+    nextPage: string;
+    previousPage: string;
+    showingCommits: string;
   };
 };
 
-export function CommitList({ commits, labels, locale }: CommitListProps) {
+export function CommitList({ commits, currentPage, labels, locale, totalCommits, totalPages }: CommitListProps) {
   const dateLocale = locale === "vi" ? "vi-VN" : "en-US";
 
   return (
     <section className="rounded-lg border border-border bg-white p-4 shadow-panel">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-ink">{labels.recentCommits}</h2>
-        <span className="text-sm text-muted">{commits.length} commit</span>
+        <span className="text-sm text-muted">
+          {labels.showingCommits} {commits.length}/{totalCommits}
+        </span>
       </div>
 
       {commits.length === 0 ? (
@@ -52,18 +63,39 @@ export function CommitList({ commits, labels, locale }: CommitListProps) {
 
                 <form action={deleteCommitAction}>
                   <input name="id" type="hidden" value={commit.id} />
-                  <button
-                    className="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50"
-                    type="submit"
-                  >
-                    {labels.deleteCommit}
-                  </button>
+                  <DeleteCommitButton confirmMessage={labels.deleteConfirm} label={labels.deleteCommit} />
                 </form>
               </div>
             </article>
           ))}
         </div>
       )}
+
+      {totalPages > 1 ? (
+        <nav aria-label="Pagination" className="mt-5 flex items-center justify-between border-t border-border pt-4">
+          <PageLink disabled={currentPage <= 1} href={`/dashboard?page=${currentPage - 1}`}>
+            {labels.previousPage}
+          </PageLink>
+          <span className="text-sm tabular-nums text-muted">
+            {currentPage} / {totalPages}
+          </span>
+          <PageLink disabled={currentPage >= totalPages} href={`/dashboard?page=${currentPage + 1}`}>
+            {labels.nextPage}
+          </PageLink>
+        </nav>
+      ) : null}
     </section>
+  );
+}
+
+function PageLink({ children, disabled, href }: { children: React.ReactNode; disabled: boolean; href: string }) {
+  if (disabled) {
+    return <span className="rounded-md border border-border px-3 py-2 text-sm text-muted opacity-50">{children}</span>;
+  }
+
+  return (
+    <Link className="rounded-md border border-border bg-white px-3 py-2 text-sm font-medium text-ink transition hover:bg-canvas" href={href}>
+      {children}
+    </Link>
   );
 }

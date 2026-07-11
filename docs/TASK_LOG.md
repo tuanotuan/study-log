@@ -1,6 +1,6 @@
 # Task Log
 
-Last updated: 2026-07-08
+Last updated: 2026-07-11
 
 ## 2026-07-04 - Initial App
 
@@ -125,3 +125,15 @@ Last updated: 2026-07-08
 
 - Added the 365-day contribution graph and aggregate study stats to every public user profile.
 - Public profile queries use study dates only; commit titles, notes, images, and individual records remain private.
+
+## 2026-07-11 - Full Project Audit And UI Upgrade
+
+- Fixed strict calendar-date validation so impossible dates cannot silently roll into another month.
+- Fixed orphaned Cloudinary/local images when a commit or avatar upload succeeds but its database write fails.
+- Hardened language return redirects and malformed public-profile usernames.
+- Added 8-item commit pagination, delete confirmation, and upload pending states.
+- Improved the dashboard header and contribution graph with Lucide icons, month/weekday labels, keyboard-focusable cells, and clearer stat presentation.
+- Updated current streak behavior so a streak through yesterday remains active before today's study is logged.
+- Limited graph database queries to the visible 365-day window while preserving access to all commit-history pages.
+- Added Vitest with regression tests for date parsing and contribution statistics.
+- Disabled visible auth debug codes in the Render Blueprint.

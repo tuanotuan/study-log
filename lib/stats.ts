@@ -12,10 +12,14 @@ export type ContributionStats = {
   maxStreak: number;
 };
 
+export function getContributionStartDate(reference = new Date()) {
+  return addUtcDays(startOfUtcDay(reference), -364);
+}
+
 export function buildContributionDays(studyDates: Date[]) {
   const today = startOfUtcDay(new Date());
   const end = today;
-  const start = addUtcDays(end, -364);
+  const start = getContributionStartDate(today);
   const counts = new Map<string, number>();
 
   for (const studyDate of studyDates) {
@@ -52,7 +56,14 @@ export function getContributionStats(days: CommitDay[]): ContributionStats {
     }
   }
 
-  for (let index = days.length - 1; index >= 0; index -= 1) {
+  let currentIndex = days.length - 1;
+
+  // A streak is still current when the user studied yesterday but has not logged today yet.
+  if (currentIndex >= 0 && days[currentIndex].count === 0) {
+    currentIndex -= 1;
+  }
+
+  for (let index = currentIndex; index >= 0; index -= 1) {
     if (days[index].count === 0) {
       break;
     }

@@ -141,6 +141,11 @@ export async function POST(request: NextRequest) {
     return redirectTo("/dashboard");
   } catch (error) {
     console.error("[LogStudy profile save error]", error);
+
+    if (avatarUrl && avatarUrl !== user.avatarUrl) {
+      await deleteUploadedImage(avatarUrl);
+    }
+
     return redirectWithError(t.errors.saveFailed);
   }
 }

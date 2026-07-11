@@ -5,7 +5,7 @@ export function parseStudyDate(value: FormDataEntryValue | null) {
 
   const date = new Date(`${value}T00:00:00.000Z`);
 
-  if (Number.isNaN(date.getTime())) {
+  if (Number.isNaN(date.getTime()) || formatDateInput(date) !== value) {
     return null;
   }
 

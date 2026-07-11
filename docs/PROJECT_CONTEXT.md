@@ -1,6 +1,6 @@
 # Project Context
 
-Last updated: 2026-07-08
+Last updated: 2026-07-11
 
 ## Product
 
@@ -16,6 +16,7 @@ Core user story:
 - After studying, the user creates a study commit.
 - One study commit contains a title, note, study date, and exactly one image.
 - The dashboard shows recent commits and a GitHub-like contribution graph.
+- Commit history is paginated at 8 items per page and delete requires confirmation.
 - Users can delete their own commits only.
 - Forgot password uses a 6-digit reset code.
 
@@ -51,6 +52,8 @@ Public UI:
 - Logged-in users visiting `/` are redirected to `/dashboard`.
 - Login and register pages use the same top header and compact form panels.
 - Public profile pages show profile metadata plus an aggregate contribution graph and study stats; individual commit content remains private to its owner.
+- Dashboard and profile graphs include month/weekday labels and keyboard-focusable day cells.
+- Upload forms show a pending state while Render/Cloudinary requests are in progress.
 
 Authentication:
 
@@ -81,8 +84,8 @@ Email:
 - Resend sends auth emails through HTTPS when `RESEND_API_KEY` is configured.
 - If email sending is not configured or fails, the code is logged with prefix `[LogStudy email fallback]`.
 - Resend failures are logged as `[LogStudy resend email error]`.
-- By default, fallback codes are also shown on verify/reset pages for demo use.
-- Set `AUTH_CODE_DEBUG=false` to hide fallback codes from pages.
+- Render uses `AUTH_CODE_DEBUG=false`, so fallback codes are never exposed in production URLs/pages.
+- Local development may set `AUTH_CODE_DEBUG=true` temporarily for demo testing.
 
 Deploy:
 

@@ -19,7 +19,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: #ffffff;
+  background: #f6f8fa;
   color: #24292f;
   font-family:
     ui-sans-serif,
@@ -28,6 +28,22 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+}
+
+::selection {
+  background: #b7ebc6;
+  color: #1f2328;
+}
+
+button,
+a,
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }
 
 a {

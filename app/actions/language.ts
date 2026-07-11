@@ -19,5 +19,13 @@ export async function setLanguageAction(formData: FormData) {
     });
   }
 
-  redirect(typeof returnTo === "string" && returnTo.startsWith("/") ? returnTo : "/");
+  const safeReturnTo =
+    typeof returnTo === "string" &&
+    returnTo.startsWith("/") &&
+    !returnTo.startsWith("//") &&
+    !returnTo.includes("\\")
+      ? returnTo
+      : "/";
+
+  redirect(safeReturnTo);
 }

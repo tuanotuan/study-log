@@ -37,7 +37,8 @@ export const copy = {
       backToLogin: "Quay lại đăng nhập",
       language: "Ngôn ngữ",
       vietnamese: "Tiếng Việt",
-      english: "English"
+      english: "English",
+      processing: "Đang xử lý..."
     },
     home: {
       eyebrow: "Commit học tập mỗi ngày",
@@ -126,7 +127,11 @@ export const copy = {
       currentStreak: "Streak hiện tại",
       maxStreak: "Streak max",
       activeDays: "Số ngày có học",
-      days: "ngày"
+      days: "ngày",
+      showingCommits: "Đang hiển thị",
+      previousPage: "Trang trước",
+      nextPage: "Trang sau",
+      deleteConfirm: "Xóa commit này? Hành động này không thể hoàn tác."
     },
     profile: {
       dashboard: "Dashboard",
@@ -188,7 +193,8 @@ export const copy = {
       backToLogin: "Back to login",
       language: "Language",
       vietnamese: "Tiếng Việt",
-      english: "English"
+      english: "English",
+      processing: "Processing..."
     },
     home: {
       eyebrow: "Daily study commits",
@@ -277,7 +283,11 @@ export const copy = {
       currentStreak: "Current streak",
       maxStreak: "Max streak",
       activeDays: "Active days",
-      days: "days"
+      days: "days",
+      showingCommits: "Showing",
+      previousPage: "Previous",
+      nextPage: "Next",
+      deleteConfirm: "Delete this commit? This action cannot be undone."
     },
     profile: {
       dashboard: "Dashboard",

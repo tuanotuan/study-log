@@ -6,6 +6,8 @@ Trang public co header voi Login/Register o goc tren ben phai; user da login vao
 
 Moi tai khoan co ho so public tai `/u/<username>` voi avatar, ten hien thi, tieu su, contribution graph va thong ke hoc tap tong hop. Noi dung tung commit van chi hien thi cho chu tai khoan. Trang `/profile/edit` cho user dang login cap nhat ho so cua chinh minh.
 
+Dashboard phan trang 8 commit moi trang, co xac nhan truoc khi xoa, trang thai dang xu ly cho form upload va contribution graph co nhan thang/thu. Logic ngay hoc duoc kiem thu tu dong bang Vitest.
+
 ## Stack
 
 - Next.js + TypeScript
@@ -98,7 +100,7 @@ Render config chinh:
 - `DIRECT_URL`: set thủ công bằng Neon direct Postgres URL
 - `UPLOAD_DIR`: `/tmp/logstudy-uploads`
 - `APP_URL`: `https://logstudy.onrender.com`
-- `AUTH_CODE_DEBUG`: `true`
+- `AUTH_CODE_DEBUG`: `false`
 - `SESSION_SECRET`: Render tu generate
 
 Database được lưu persistent trong Neon. Ảnh upload/avatar được lưu persistent trong Cloudinary nếu cấu hình `CLOUDINARY_*`; nếu thiếu cấu hình Cloudinary thì app fallback về `UPLOAD_DIR`.
@@ -127,7 +129,7 @@ RESEND_API_KEY=re_xxxxxxxxx
 RESEND_FROM=LogStudy <onboarding@resend.dev>
 ```
 
-Voi Resend, can tao API key va dat `RESEND_FROM`; de production nen verify domain rieng. Neu chua cau hinh Resend hoac Resend loi, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Log co `[LogStudy resend email error]` neu Resend tu choi request. Mac dinh app hien test code ngay tren trang verify/reset de demo nhanh; dat `AUTH_CODE_DEBUG=false` de tat.
+Voi Resend, can tao API key va dat `RESEND_FROM`; de production nen verify domain rieng. Neu chua cau hinh Resend hoac Resend loi, app van chay va in ma xac thuc/reset trong Render Logs voi prefix `[LogStudy email fallback]`. Log co `[LogStudy resend email error]` neu Resend tu choi request. Render Blueprint dat `AUTH_CODE_DEBUG=false`; chi bat tam thoi trong local/demo khi can xem ma test tren giao dien.
 
 ## Persistent image uploads
 
@@ -154,6 +156,7 @@ Neu thieu cac bien tren, app van upload local vao `UPLOAD_DIR` de dev/test nhanh
 
 ```bash
 npm run lint
+npm run test
 npm run build
 npm run db:deploy
 npm run prisma:studio

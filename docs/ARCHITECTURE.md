@@ -1,6 +1,6 @@
 # Architecture
 
-Last updated: 2026-07-08
+Last updated: 2026-07-11
 
 ## App Structure
 
@@ -13,6 +13,8 @@ Important paths:
 - `app/api/profile/route.ts` - profile update route handler for avatar uploads.
 - `components/` - dashboard form, commit list, contribution graph.
 - `components/FileSizeInput.tsx` - client-side upload size validation for file inputs.
+- `components/FormSubmitButton.tsx` - shared pending state for multipart upload forms.
+- `components/DeleteCommitButton.tsx` - client-side destructive-action confirmation.
 - `components/PublicHeader.tsx` - public marketing/auth header with Login/Register actions.
 - `components/LanguageSwitcher.tsx` - VI/EN switcher backed by a server action and locale cookie.
 - `lib/i18n.ts` - locale helpers and Vietnamese/English copy dictionary.
@@ -47,7 +49,7 @@ Language:
 
 Protected route:
 
-- `/dashboard` - requires login. Shows create form, contribution graph, and recent commits.
+- `/dashboard` - requires login. Shows create form, contribution graph, and commit history paginated at 8 items per page.
 
 ## Data Model
 
@@ -110,6 +112,7 @@ Create flow:
 - Max image size: 5MB.
 - The file input also validates the max size in the browser before submit.
 - Image URL stored in DB. With Cloudinary configured this is an HTTPS Cloudinary URL; otherwise it is `/uploads/<filename>`.
+- If image upload succeeds but the database write fails, the newly uploaded image is deleted to prevent orphaned assets.
 - Physical upload directory comes from `UPLOAD_DIR`, default `public/uploads`, only for local fallback.
 
 Delete flow:
@@ -152,7 +155,13 @@ Current stats:
 - Max streak.
 - Active study days.
 
-The graph shows the last 365 days. Cell darkness increases with commit count for the day.
+The graph shows the last 365 days with month and weekday labels. Cell darkness increases with commit count for the day. A streak through yesterday remains current until the user has had the full current day to study.
+
+## Automated Tests
+
+- Vitest covers strict calendar-date parsing and contribution statistics.
+- `vitest.config.ts` maps the Next.js `@/` alias for tests.
+- Run with `npm run test`.
 
 ## Email
 

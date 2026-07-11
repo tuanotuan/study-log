@@ -1,18 +1,24 @@
 import type { Metadata } from "next";
+import { getLocale } from "@/lib/i18n";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "LogStudy",
-  description: "Ghi lại commit học tập hằng ngày"
+  title: {
+    default: "LogStudy",
+    template: "%s | LogStudy"
+  },
+  description: "Ghi lại hành trình học tập mỗi ngày bằng commit, hình ảnh và streak."
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="vi">
+    <html lang={locale}>
       <body>{children}</body>
     </html>
   );

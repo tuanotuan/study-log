@@ -5,7 +5,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { getCopy, getLocale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { buildContributionDays, getContributionStats } from "@/lib/stats";
+import { buildContributionDays, getContributionStartDate, getContributionStats } from "@/lib/stats";
 
 type PublicProfilePageProps = {
   params: Promise<{
@@ -22,7 +22,13 @@ export default async function PublicProfilePage({ params, searchParams }: Public
   const locale = await getLocale();
   const t = getCopy(locale);
   const viewer = await getCurrentUser();
-  const normalizedUsername = decodeURIComponent(username).trim().toLowerCase();
+  let normalizedUsername: string;
+
+  try {
+    normalizedUsername = decodeURIComponent(username).trim().toLowerCase();
+  } catch {
+    notFound();
+  }
 
   if (!/^[a-z0-9_]{3,24}$/.test(normalizedUsername)) {
     notFound();
@@ -38,6 +44,9 @@ export default async function PublicProfilePage({ params, searchParams }: Public
       avatarUrl: true,
       createdAt: true,
       studyCommits: {
+        where: {
+          studyDate: { gte: getContributionStartDate() }
+        },
         select: {
           studyDate: true
         }

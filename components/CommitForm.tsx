@@ -1,4 +1,6 @@
+import { ImagePlus } from "lucide-react";
 import { FileSizeInput } from "@/components/FileSizeInput";
+import { FormSubmitButton } from "@/components/FormSubmitButton";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
@@ -14,12 +16,18 @@ type CommitFormProps = {
     createCommit: string;
   };
   largeImageError: string;
+  pendingLabel: string;
 };
 
-export function CommitForm({ today, error, labels, largeImageError }: CommitFormProps) {
+export function CommitForm({ today, error, labels, largeImageError, pendingLabel }: CommitFormProps) {
   return (
     <section className="rounded-lg border border-border bg-white p-4 shadow-panel">
-      <h2 className="text-base font-semibold text-ink">{labels.newCommit}</h2>
+      <div className="flex items-center gap-2">
+        <span className="grid h-8 w-8 place-items-center rounded-md bg-emerald-50 text-success">
+          <ImagePlus aria-hidden="true" size={17} strokeWidth={1.8} />
+        </span>
+        <h2 className="text-base font-semibold text-ink">{labels.newCommit}</h2>
+      </div>
 
       {error ? (
         <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
@@ -72,12 +80,12 @@ export function CommitForm({ today, error, labels, largeImageError }: CommitForm
           />
         </label>
 
-        <button
-          className="w-full rounded-md bg-success px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#116329] focus:outline-none focus:ring-2 focus:ring-emerald-200"
-          type="submit"
-        >
-          {labels.createCommit}
-        </button>
+        <FormSubmitButton
+          className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-success px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#116329] focus:outline-none focus:ring-2 focus:ring-emerald-200 disabled:opacity-60"
+          label={labels.createCommit}
+          pendingLabel={pendingLabel}
+          showPlus
+        />
       </form>
     </section>
   );

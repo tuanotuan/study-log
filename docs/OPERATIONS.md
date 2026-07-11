@@ -1,6 +1,6 @@
 # Operations
 
-Last updated: 2026-07-08
+Last updated: 2026-07-11
 
 ## Local Development
 
@@ -28,6 +28,7 @@ Useful commands:
 
 ```bash
 npm run lint
+npm run test
 npm run build
 npm run db:ensure
 npm run prisma:generate
@@ -90,7 +91,7 @@ Configured Render env in Blueprint:
 - `DIRECT_URL`: set manually to Neon direct Postgres URL.
 - `UPLOAD_DIR=/tmp/logstudy-uploads`
 - `APP_URL=https://logstudy.onrender.com`
-- `AUTH_CODE_DEBUG=true`
+- `AUTH_CODE_DEBUG=false`
 - Optional Resend secrets for HTTP email delivery.
 - Optional Cloudinary secrets for persistent image delivery.
 
@@ -159,6 +160,7 @@ Expected task ending:
 
 ```bash
 npm run lint
+npm run test
 npm run build
 git status --short
 git add <changed-files>
@@ -181,14 +183,22 @@ If no email provider is configured:
 
 1. Go to `/register` or `/forgot-password`.
 2. Submit an existing email for forgot password, or a new email for register.
-3. The next page should show a yellow message with `Test code: <6 digits>`.
+3. With local `AUTH_CODE_DEBUG=true`, the next page should show a yellow message with `Test code: <6 digits>`.
 4. Use that code in `/verify-email` or `/reset-password`.
 
 If Resend is configured:
 
 1. Trigger the flow and check the mailbox.
 2. Check Render Logs for `[LogStudy resend email sent]`.
-3. If it fails, check `[LogStudy resend email error]`; the visible fallback code can still be used for testing.
+3. If it fails, check `[LogStudy resend email error]`; production keeps fallback codes in logs because `AUTH_CODE_DEBUG=false`.
+
+## How To Test Dashboard History
+
+1. Create more than 8 study commits.
+2. Confirm `/dashboard` shows 8 cards and Previous/Next controls.
+3. Move between pages and confirm older commits remain accessible.
+4. Click delete, cancel the confirmation, and confirm the commit remains.
+5. Delete again and accept; only that user's commit should be removed.
 
 ## How To Test Username Login
 

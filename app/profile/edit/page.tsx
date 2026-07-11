@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FileSizeInput } from "@/components/FileSizeInput";
+import { FormSubmitButton } from "@/components/FormSubmitButton";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { getCopy, getLocale } from "@/lib/i18n";
 import { getCurrentUser } from "@/lib/session";
@@ -114,12 +115,11 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
               >
                 {t.profile.cancel}
               </Link>
-              <button
-                className="rounded-md bg-success px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#116329] focus:outline-none focus:ring-2 focus:ring-emerald-200"
-                type="submit"
-              >
-                {t.profile.save}
-              </button>
+              <FormSubmitButton
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-success px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#116329] focus:outline-none focus:ring-2 focus:ring-emerald-200 disabled:opacity-60"
+                label={t.profile.save}
+                pendingLabel={t.common.processing}
+              />
             </div>
           </form>
         </div>
